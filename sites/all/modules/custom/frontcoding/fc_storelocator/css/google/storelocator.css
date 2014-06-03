@@ -1,0 +1,111 @@
+.fc-storelocator-google .storelocator-panel {
+  border: 1px solid #ccc;
+  overflow: auto;
+}
+
+.fc-storelocator-google .storelocator-panel .store-list {
+  margin: 0;
+  padding: 0;
+}
+
+.fc-storelocator-google .storelocator-panel .store-list li,
+.fc-storelocator-google .storelocator-panel .directions-panel {
+  padding: 5px;
+}
+.fc-storelocator-google .storelocator-panel .directions-panel {
+  font-size: 0.8em;
+}
+
+.fc-storelocator-google .storelocator-panel .store-list li.store:hover {
+  cursor: pointer;
+  background: #eee;
+}
+
+.fc-storelocator-google .storelocator-panel .store-list li.highlighted,
+.fc-storelocator-google .storelocator-panel .store-list li.highlighted:hover {
+  background: #ccf;
+}
+
+.fc-storelocator-google .storelocator-panel .directions {
+  display: none;
+}
+
+.fc-storelocator-google .storelocator-panel .location-search {
+  padding: 5px;
+}
+
+.fc-storelocator-google .storelocator-panel .location-search input {
+  width: 95%;
+}
+
+.fc-storelocator-google .storelocator-panel .location-search h4 {
+  font-size: 0.8em;
+  margin: 0;
+  padding: 0;
+}
+
+.fc-storelocator-google .storelocator-panel .store-list .no-stores {
+  color: grey;
+}
+
+.fc-storelocator-google .storelocator-panel .store .features {
+  display: none;
+}
+
+.fc-storelocator-google .storelocator-panel .feature-filter {
+  overflow: hidden;
+}
+
+.fc-storelocator-google .storelocator-panel .feature-filter label {
+  display: block;
+  font-size: 0.8em;
+  margin: 0 0.4em;
+  float: left;
+}
+
+.fc-storelocator-google .store .title {
+  font-weight: bold;
+}
+
+.fc-storelocator-google .store .address,
+.fc-storelocator-google .store .phone,
+.fc-storelocator-google .store .web,
+.fc-storelocator-google .store .misc {
+  font-size: 80%;
+  margin-top: 0.2em;
+  margin-bottom: 0.5em;
+  display: block;
+}
+
+.fc-storelocator-google .store .features {
+  overflow: hidden;
+  color: grey;
+  margin: 0;
+  padding: 0;
+  font-size: 70%;
+  max-width: 250px;
+}
+
+.fc-storelocator-google .store .features li {
+  display: inline;
+  float: left;
+  padding-right: 0.8em;
+}
+
+.fc-storelocator-google .store .web a {
+  color: green;
+}
+
+.fc-storelocator-google .store .action {
+  font-size: 0.8em;
+  color: green;
+  margin-right: 0.5em;
+}
+
+
+
+/* --------------------------- */
+
+.fc-storelocator-google #fc-storelocator-google-map-canvas, .fc-storelocator-google #fc-storelocator-google-panel { height: 300px; }
+.fc-storelocator-google #fc-storelocator-google-panel { width: 200px; float: left; margin-right: 10px; }
+.fc-storelocator-google #fc-storelocator-google-panel .feature-filter label { width: 130px; }

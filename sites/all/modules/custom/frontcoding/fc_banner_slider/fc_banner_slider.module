@@ -1,0 +1,423 @@
+<?php
+
+
+
+/**
+ * Implements hook_image_default_styles().
+ */
+function fc_banner_slider_image_default_styles() {
+  $styles = array();
+  $styles['fc_banner_slider_large'] = array(
+    'effects' => array(
+      array(
+        // @todo We want to not upscale if the user uploads a smaller image, but
+        //   image_scale_and_crop doesn't support that option. Try to get
+        //   http://drupal.org/node/872206 into core, or solve it in contrib.
+        'name' => 'image_scale_and_crop',
+        'data' => array('width' => 960, 'height' => 300, 'upscale' => FALSE),
+        'weight' => 0,
+      ),
+    )
+  );
+  $styles['fc_banner_slider_mini'] = array(
+    'effects' => array(
+      array(
+        'name' => 'image_scale_and_crop',
+        'data' => array('width' => 50, 'height' => 50, 'upscale' => FALSE),
+        'weight' => 0,
+      ),
+    )
+  );
+  return $styles;
+}
+
+
+
+/**
+* Implementation of hook_permission()
+*/
+function fc_banner_slider_permission() {
+  return array(
+    'fc banner slider admin list' => array(
+      'title' => t('Administer banner slider list'),
+    ),
+    'fc banner slider admin category' => array(
+      'title' => t('Administer banner slider category'),
+    ),
+  );
+}
+
+
+
+/**
+ * Implements hook_menu().
+ */
+function fc_banner_slider_menu() {
+
+  $items['admin/config/webmaster/fc-banner-slider'] = array(
+    'title' => 'Banner Slider',
+    'description' => 'Banner slider content management.',
+    'page callback' => 'fc_banner_slider_admin',
+    'access arguments' => array('fc banner slider admin list'),
+    'position' => 'left',
+    'weight' => 1000,
+    'file' => 'fc_banner_slider.admin.inc',
+  );
+
+  $items['admin/config/webmaster/fc-banner-slider/banner-list'] = array(
+    'title' => 'Banner List',
+    'access arguments' => array('fc banner slider admin list'),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+    'file' => 'fc_banner_slider.admin.inc',
+  );
+
+  $items['admin/config/webmaster/fc-banner-slider/category-list'] = array(
+    'title' => 'Category List',
+    'page callback' => 'fc_banner_slider_category_admin',
+    'access arguments' => array('fc banner slider admin category'),
+    'file' => 'fc_banner_slider.admin.inc',
+    'type' => MENU_LOCAL_TASK,
+  );
+
+  $items['admin/config/webmaster/fc-banner-slider/category-list/add'] = array(
+    'title' => 'Add Banner Category',
+    'description' => 'Add banner category.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('fc_banner_slider_category_add'),
+    'access arguments' => array('fc banner slider admin list'),
+    'file' => 'fc_banner_slider.admin.inc',
+  );
+
+  $items['admin/config/webmaster/fc-banner-slider/category-list/%/edit'] = array(
+    'title' => 'Edit Banner Category',
+    'description' => 'Edit banner category.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('fc_banner_slider_category_edit'),
+    'access arguments' => array('fc banner slider admin list'),
+    'file' => 'fc_banner_slider.admin.inc',
+  );
+
+  $items['admin/config/webmaster/fc-banner-slider/category-list/%/delete'] = array(
+    'title' => 'Delete Banner Category',
+    'description' => 'Delete banner category.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('fc_banner_slider_category_delete'),
+    'access arguments' => array('fc banner slider admin list'),
+    'file' => 'fc_banner_slider.admin.inc',
+  );
+
+  return $items;
+
+}
+
+
+
+/**
+ * Implements hook_block_info().
+ *
+ * This hook declares what blocks are provided by the module.
+ */
+function fc_banner_slider_block_info() {
+  // This hook returns an array, each component of which is an array of block
+  // information. The array keys are the 'delta' values used in other block
+  // hooks.
+
+  // The required block information is a block description, which is shown
+  // to the site administrator in the list of possible blocks. You can also
+  // provide initial settings for block weight, status, etc.
+
+  // Many options are defined in hook_block_info():
+
+  $result = db_query("SELECT * FROM {fc_banner_slider_category} ORDER BY category_id");
+  
+  $blocks = array();
+  
+  foreach ($result as $row) {  
+
+    $blocks['fc_banner_slider_content_'.$row->category_id] = array(
+      // info: The name of the block.
+      'info' => t('Banner slider content: '.$row->category_name),
+      // Block caching options (per role, per user, etc.)
+      'cache' => DRUPAL_CACHE_PER_ROLE, // default
+    );
+    
+  }
+
+  return $blocks;
+
+}
+
+
+
+/**
+ * Implements hook_block_view().
+ *
+ * This hook generates the contents of the blocks themselves.
+ */
+function fc_banner_slider_block_view($delta = '') {
+  //The $delta parameter tells us which block is being requested.
+  
+  $result = db_query("SELECT * FROM {fc_banner_slider_category} ORDER BY category_id");
+  
+  foreach ($result as $row) {  
+
+    if ($delta=='fc_banner_slider_content_'.$row->category_id) {
+
+      $block['subject'] = t('Banner Slider: '.$row->category_name);
+      $block['content'] = _fc_banner_slider_build_content($row->category_id);
+
+    }
+  
+  }
+  
+  
+  /*
+  switch ($delta) {
+    case 'fc_banner_slider_content':
+      // The subject is displayed at the top of the block. Note that it
+      // should be passed through t() for translation. The title configured
+      // for the block using Drupal UI supercedes this one.
+      $block['subject'] = t('Banner Slider');
+      // The content of the block is typically generated by calling a custom
+      // function.
+      $block['content'] = _fc_banner_slider_build_content();
+      break;
+  }
+  */
+  
+  
+  return $block;
+}
+
+
+
+function _fc_banner_slider_build_content($category_id) {
+
+  global $language;
+  
+  $style = 'fc_banner_slider_large';
+  
+  $result = db_query("SELECT * FROM {fc_banner_slider_category} WHERE category_id = :category_id",
+    array(
+      ':category_id' => $category_id,
+    )
+  );
+  foreach ($result as $row) {
+    $style = $row->image_style_name;
+  }
+
+  $query = db_select('node', 'n');
+  $query->join('field_data_fc_banner_slider_showorder', 'so', 'n.nid=so.entity_id AND n.vid=so.revision_id');
+  $query->join('fc_banner_slider_nodecategory', 'nc', 'nc.nid=n.nid ANd nc.vid=n.vid');
+  $query->condition('n.status', 1, '=');
+  $query->condition('n.type', 'fc_banner_slider', '=');
+  $query->condition('n.language', array(LANGUAGE_NONE, $language->language), 'IN');
+  $query->condition('so.entity_type', 'node', '=');
+  $query->condition('so.bundle', 'fc_banner_slider', '=');
+  $query->condition('nc.category_id', $category_id, '=');
+  $query->fields('n', array('nid', 'type', 'language', 'title', 'uid', 'status', 'created', 'changed'));
+  $query->fields('so', array('fc_banner_slider_showorder_value'));
+  $query->orderBy('so.fc_banner_slider_showorder_value', 'ASC');
+  $query->orderBy('n.created', 'DESC');
+
+  user_build_filter_query($query);
+  
+  // debug($query->__toString());
+  
+  $result = $query->execute();
+
+  $html_contents = array();
+  
+  foreach ($result as $item) {
+    $node = node_load($item->nid);
+    $uri = $node->fc_banner_slider_picture['und'][0]['uri'];
+    $linkpath = $node->fc_banner_slider_linkpath['und'][0]['value'];
+    // debug($uri);
+    $html_content = theme('image_style', array('style_name' => $style, 'path' => $uri, 'getsize' => FALSE, 'title'=>check_plain($node->title)));
+    if ( count($linkpath) > 0 ) {
+      $html_content = l($html_content, $linkpath, array('html' => true));
+    }
+    $html_contents[] = $html_content;
+  }
+  
+  $styles = image_styles();
+  
+  $effects = $styles[$style]['effects'];
+  
+  foreach ($effects as $item) {
+    if ($item['effect callback']=='image_scale_and_crop_effect') {
+      $width = (int) $item['data']['width'];
+      $height = (int) $item['data']['height'];
+    }
+  }
+
+  $fc_slider = new FC_Slider(
+    array(
+      'container_width' => $width,
+      'holder_width' => $width,
+      'height' => $height,
+      'item_size' => 1,
+      'item_step' => 1,
+      'item_speed' => 500,
+      'html_contents' => $html_contents,
+      'show_pagination' => FALSE,
+      'hide_arrow' => FALSE,
+      'hide_onmouseleave' => FALSE,
+      'container_id' => 'fc-banner-slider-'.$category_id,
+      'container_class' => 'fc-banner-slider',
+    )
+  );
+  
+  return $fc_slider->get_outputHTML();
+  
+}
+
+
+
+/**
+ * Implements hook_form_alter().
+ *
+ * By implementing this hook, we're able to modify any form. We'll only make
+ * changes to two types: a node's content type configuration and edit forms.
+ *
+ * We need to have a way for administrators to indicate which content types
+ * should have our rating field added. This is done by inserting radios in
+ * the node's content type configuration page.
+ *
+ * Changes made by this hook will be shown when editing the settings of any
+ * content type.
+ *
+ * Optionally, hook_form_FORM_ID_alter() could be used with the function name
+ * nodeapi_example_form_node_type_form_alter
+ */
+function fc_banner_slider_form_alter(&$form, $form_state, $form_id) {
+
+  if ($form_id == 'fc_banner_slider_node_form') {
+  
+    $options = array();
+  
+    $result = db_query("SELECT * FROM {fc_banner_slider_category} ORDER BY category_id");
+    foreach ($result as $row) {
+      $options[$row->category_id] = $row->category_name;
+    }
+    
+    $form['fc_banner_slider_category_id'] = array(
+      '#type' => 'select',
+      '#title' => t('Category'),
+      '#options' => $options,
+      '#required' => TRUE,
+      '#weight' => -1,
+      '#default_value' => isset($form['#node']->fc_banner_slider_category_id) ? $form['#node']->fc_banner_slider_category_id : '',
+    );
+  
+  }
+
+}
+
+
+
+/**
+ * Implements hook_node_insert().
+ *
+ * As a new node is being inserted into the database, we need to do our own
+ * database inserts.
+ */
+function fc_banner_slider_node_insert($node) {
+  if ($node->type=='fc_banner_slider') {
+    // Notice that we are ignoring any revision information using $node->nid
+    db_insert('fc_banner_slider_nodecategory')
+    ->fields(array(
+        'nid' => $node->nid,
+        'vid' => $node->vid,
+        'category_id' => $node->fc_banner_slider_category_id,
+    ))
+    ->execute();
+  }
+}
+
+
+
+/**
+ * Implements hook_node_update().
+ *
+ * As an existing node is being updated in the database, we need to do our own
+ * database updates.
+ *
+ * This hook is called when an existing node has been changed. We can't simply
+ * update, since the node may not have a rating saved, thus no
+ * database field. So we first check the database for a rating. If there is one,
+ * we update it. Otherwise, we call nodeapi_example_node_insert() to create one.
+ */
+function fc_banner_slider_node_update($node) {
+  if ($node->type=='fc_banner_slider') {
+    $found = db_select('fc_banner_slider_nodecategory', 'nc')
+      ->fields('nc', array(
+        'category_id',
+      ))
+      ->where('nc.vid = (:vid)', array(':vid' => $node->vid))
+      ->execute()->fetchField();
+
+    if ($found) {
+      db_update('fc_banner_slider_nodecategory')
+        ->fields(array('category_id' => $node->fc_banner_slider_category_id))
+        ->condition('vid', $node->vid)
+        ->execute();
+    }
+    else {
+      fc_banner_slider_node_insert($node);
+    }
+  }
+}
+
+
+
+/**
+ * Implements hook_node_delete().
+ *
+ * When a node is deleted, we need to remove all related records from our table,
+ * including all revisions. For the delete operations we use node->nid.
+ */
+function fc_banner_slider_node_delete($node) {
+  // Notice that we're deleting even if the content type has no rating enabled.
+  db_delete('fc_banner_slider_nodecategory')
+    ->condition('nid', $node->nid)
+    ->execute();
+}
+
+
+
+/**
+ * Implements hook_node_load().
+ */
+function fc_banner_slider_node_load($nodes, $types) {
+
+  // Now we need to make a list of revisions based on $our_types
+  foreach ($nodes as $node) {
+    // We are using the revision id instead of node id.
+    if ($node->type=='fc_banner_slider') {
+      $vids[] = $node->vid;
+    }
+  }
+  // Check if we should load rating for any of the nodes.
+  if (!isset($vids) || !count($vids)) {
+    return;
+  }
+
+  // When we read, we don't care about the node->nid; we look for the right
+  // revision ID (node->vid).
+  $result = db_select('fc_banner_slider_nodecategory', 'nc')
+  ->fields('nc', array('nid', 'vid', 'category_id'))
+  ->where('nc.vid IN (:vids)', array(':vids' => $vids))
+  ->execute();
+
+  foreach ($result as $record) {
+  
+    $nodes[$record->nid]->fc_banner_slider_category_id = $record->category_id;
+  }
+  
+}
+
+
+
+

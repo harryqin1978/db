@@ -1,0 +1,411 @@
+<?php 
+/**
+ * Implements hook_install().
+ */
+function fc_career_install() {
+
+  $t = get_t();
+  
+  //Location
+  
+  $fc_career_location = array(
+    'type' => 'fc_career_location',
+    'name' => $t('Career Location'),
+    'base' => 'node_content',
+    'description' => $t('Career Location content type'),
+    'title_label' => $t('Title'),
+	  'custom' => TRUE,
+	  'locked' => TRUE,
+  );
+  
+  $content_type = node_type_set_defaults($fc_career_location);
+  node_add_body_field($content_type, $t('Description'));
+  node_type_save($content_type);
+  $body_instance = field_info_instance('node','body','fc_career_location');
+  field_update_instance($body_instance);  
+  foreach (_fc_career_install_location_fields() as $field) {
+    field_create_field($field);
+  }
+
+  foreach (_fc_career_location_installed_instances() as $instance) {
+    $instance['entity_type'] = 'node';
+    $instance['bundle'] = $fc_career_location['type'];
+    field_create_instance($instance);
+  }  
+  //Department
+  
+  $fc_career_department = array(
+    'type' => 'fc_career_department',
+    'name' => $t('Career Department'),
+    'base' => 'node_content',
+    'description' => $t('Career Department content type'),
+    'title_label' => $t('Title'),
+	  'custom' => TRUE,
+	  'locked' => TRUE,
+  );
+  
+  $content_type = node_type_set_defaults($fc_career_department);
+  node_add_body_field($content_type, $t('Description'));
+  node_type_save($content_type);
+  $body_instance = field_info_instance('node', 'body','fc_career_department');
+  field_update_instance($body_instance);  
+  foreach (_fc_career_install_department_fields() as $field) {
+    field_create_field($field);
+  }
+
+  foreach (_fc_career_department_installed_instances() as $instance) {
+    $instance['entity_type'] = 'node';
+    $instance['bundle'] = $fc_career_department['type'];
+    field_create_instance($instance);
+  }
+  //Career
+  
+  $fc_career = array(
+    'type' => 'fc_career',
+    'name' => $t('Career'),
+    'base' => 'node_content',
+    'description' => $t('Career  content type'),
+    'title_label' => $t('Title'),
+	  'custom' => TRUE,
+	  'locked' => TRUE,
+  );
+  
+  $content_type = node_type_set_defaults($fc_career);
+  node_add_body_field($content_type, $t('Description'));
+  node_type_save($content_type);
+  $body_instance = field_info_instance('node', 'body','fc_career');
+  field_update_instance($body_instance);
+
+  foreach (_fc_career_install_career_fields() as $field) {
+    field_create_field($field);
+  }
+
+  foreach (_fc_career_picture_installed_instances() as $instance) {
+    $instance['entity_type'] = 'node';
+    $instance['bundle'] = $fc_career['type'];
+    field_create_instance($instance);
+  }
+
+}
+ 
+
+
+
+/**
+ * Implements hook_uninstall().
+ *
+ * This hook is called when the user not only has disabled the module,
+ * but also uninstalls it from the 'uninstall' tab in the module page.
+ *
+ * So it's a perfect time to remove our fields and instances and new
+ * node type from the database.
+ *
+ */
+function fc_career_uninstall() {
+	
+	//Location
+  
+  $sql = 'SELECT nid FROM {node} n WHERE n.type = :type';
+  $result = db_query($sql, array(':type' => 'fc_career_location'));
+  $nids = array();
+  foreach ($result as $row) {
+    $nids[] = $row->nid;
+  }
+
+  node_delete_multiple($nids);
+  foreach (array_keys(_fc_career_install_location_fields()) as $field) {
+    field_delete_field($field);
+  }
+
+  $instances = field_info_instances('node', 'fc_career_location');
+  foreach ($instances as $instance_name => $instance) {
+    field_delete_instance($instance);
+  } 
+  node_type_delete('fc_career_location');
+  
+  //Department
+  
+  $sql = 'SELECT nid FROM {node} n WHERE n.type= :type';
+  $result = db_query($sql,array(':type' => 'fc_career_department'));
+  $nids = array();
+  foreach ($result as $row){
+  	$nids[] = $row->nid;
+  }
+  
+  node_delete_multiple($nids);
+  foreach (array_keys(_fc_career_install_department_fields()) as $field) {
+    field_delete_field($field);
+  }
+
+  $instances = field_info_instances('node', 'fc_career_department');
+  foreach ($instances as $instance_name => $instance) {
+    field_delete_instance($instance);
+  }  
+  node_type_delete('fc_career_department');
+  
+  
+  //Career
+  
+ 
+  $sql = 'SELECT nid FROM {node} n WHERE n.type= :type';
+  $result = db_query($sql,array(':type' => 'fc_career'));
+  $nids = array();
+  foreach ($result as $row){
+  	$nids[] = $row->nid;
+  }
+  
+  node_delete_multiple($nids);
+  
+  foreach (array_keys(_fc_career_picture_installed_instances()) as $field) {
+    field_delete_field($field);
+  }
+
+  $instances = field_info_instances('node', 'fc_career');
+  foreach ($instances as $instance_name => $instance) {
+    field_delete_instance($instance);
+  }
+  
+  node_type_delete('fc_career');
+  
+  
+  field_purge_batch(1000);
+  
+  node_types_rebuild();
+
+	
+	
+	
+	
+}
+
+
+
+
+
+
+
+/* Enable*/
+
+function fc_career_enable() {
+
+  $styles = image_styles();
+  foreach ($styles as $style) {
+    image_style_flush($style);
+  }
+
+}
+
+
+/* Disable*/
+function fc_career_disable() {
+
+  $styles = image_styles();
+  foreach ($styles as $style) {
+    image_style_flush($style);
+  }
+
+}
+
+
+
+function _fc_career_install_career_fields() {
+  $t = get_t();
+  return array(
+      'fc_career_showorder' => array(
+      'field_name' => 'fc_career_showorder',
+      'cardinality' => 1,
+      'type'        => 'number_integer',
+      'settings'    => array(
+        'max_length' => 5,
+      ),
+    ),
+    'fc_career_picture' => array(
+      'field_name' => 'fc_career_picture',
+      'type'       => 'image',
+      'cardinality' => 1,
+    ),
+  );
+}
+
+
+
+function _fc_career_picture_installed_instances() {
+  $t = get_t();
+  return array(
+      'fc_career_showorder' => array(
+      'field_name' => 'fc_career_showorder',
+      'label'       => $t('Show order'),
+      'required'    => TRUE,
+      'default_value' => array(array('value' => 5)),
+      'widget'      => array(
+        'type'    => 'number',
+      ),
+      ),
+    'fc_career_picture' => array(
+      'field_name'  => 'fc_career_picture',
+      'label'       => $t('Picture'),
+      'required'    => TRUE,
+      'widget' => array(
+        'type'    => 'image_image',
+        'weight'  => 2.10,
+      ),
+    ),
+  );
+}
+
+
+function _fc_career_install_location_fields() {
+  $t = get_t();
+  return array(
+      'fc_career_location_showorder' => array(
+      'field_name' => 'fc_career_location_showorder',
+      'cardinality' => 1,
+      'type'        => 'number_integer',
+      'settings'    => array(
+        'max_length' => 5,
+      ),
+    ),
+  );
+}
+
+
+
+function _fc_career_location_installed_instances() {
+  $t = get_t();
+  return array(
+      'fc_career_location_showorder' => array(
+      'field_name' => 'fc_career_location_showorder',
+      'label'       => $t('Show order'),
+      'required'    => TRUE,
+      'default_value' => array(array('value' => 5)),
+      'widget'      => array(
+        'type'    => 'number',
+      ),
+      ),
+  );
+}
+
+
+function _fc_career_install_department_fields() {
+  $t = get_t();
+  return array(
+      'fc_career_department_showorder' => array(
+      'field_name' => 'fc_career_department_showorder',
+      'cardinality' => 1,
+      'type'        => 'number_integer',
+      'settings'    => array(
+        'max_length' => 5,
+      ),
+    ),
+  );
+}
+
+
+
+function _fc_career_department_installed_instances() {
+  $t = get_t();
+  return array(
+      'fc_career_department_showorder' => array(
+      'field_name' => 'fc_career_department_showorder',
+      'label'       => $t('Show order'),
+      'required'    => TRUE,
+      'default_value' => array(array('value' => 5)),
+      'widget'      => array(
+        'type'    => 'number',
+      ),
+      ),
+  );
+}
+/**
+ * Implements hook_schema().
+ */
+function fc_career_schema() {
+  $schema = array();
+
+  $schema['fc_career_location_group'] = array(
+    'description' => '',
+    'fields' => array(
+      'lcid' => array(
+        'description' => 'Primary key.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'lnid' => array(
+        'description' => 'A description of the item',
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'dnid' => array(
+        'description' => 'A description of the item',
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('lcid'),
+  );
+
+  $schema['fc_career_department_group'] = array(
+    'description' => '',
+    'fields' => array(
+      'dgid' => array(
+        'description' => 'Primary key.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'dnid' => array(
+        'description' => 'A description of the item',
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'cnid' => array(
+        'description' => 'A description of the item',
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('dgid'),
+  );
+
+  
+  $schema['fc_career_apply'] = array(
+    'description' => '',
+    'fields' => array(
+      'caid' => array(
+        'description' => 'Primary key.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'cid' => array(
+      'description' => 'career id.',
+      'type' => 'int',
+      'not null' => TRUE,
+      'default' => 0,
+      ),
+      'phone_number' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'email' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'content' => array(
+        'description' => '',
+        'type' => 'text',
+        'not null' => TRUE,
+        'size' => 'big',
+      ),
+    ),
+    'primary key' => array('caid'),
+  );
+
+  return $schema;
+}
+

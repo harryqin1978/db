@@ -1,0 +1,8 @@
+name = FC Slider
+description = Roll here and there.
+package = FrontCoding
+core = 7.x
+version = "7.x-1.0-dev"
+files[] = fc_slider.module
+scripts[] = fc_slider.js
+stylesheets[all][] = fc_slider.css

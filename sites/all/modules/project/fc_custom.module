@@ -1,0 +1,11 @@
+<?php
+
+
+
+/**
+ * Implements hook_init().
+ */
+function fc_custom_init() {
+}
+
+

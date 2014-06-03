@@ -1,0 +1,80 @@
+<?php
+
+
+/**
+* Implementation of hook_permission()
+*/
+function manager_team_permission() {
+  return array(
+    'manage_team_admin_list' => array(
+      'title' => t('Administer manager team list'),
+    ),
+  );
+}
+
+
+
+/**
+ * Implements hook_menu().
+ */
+function manager_team_menu() {
+
+  $items['admin/config/webmaster/team-members'] = array(
+    'title' => 'Team Members',
+    'description' => 'Manager team content management.',
+    'page callback' => 'manager_team_admin',
+    'page arguments' => array('list'),
+    'access arguments' => array('manage_team_admin_list'),
+    'position' => 'left',
+    'weight' => 1000,
+    'file' => 'manager_team.admin.inc',
+  );
+
+  $items['team-members'] = array(
+    'page callback' => 'manager_team_page',
+    'access arguments' => array('access content'),
+    'title' => 'Team Members',
+    // 'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+
+}
+
+
+
+function manager_team_page() {
+
+  // We'll start building a renderable array that will be our page.
+  // For now we just declare the array.
+  $renderable_array = array();
+
+  global $language;
+
+  $query = db_select('node', 'n');
+  $query->condition('n.type', 'node_manager_team', '=');
+  $query->condition('n.status', 1, '=');
+  $query->condition('n.language', array(LANGUAGE_NONE, $language->language), 'IN');
+  $query->fields('n', array('nid', 'type', 'language', 'title', 'uid', 'status', 'created', 'changed'));
+  $query->orderBy('n.created', 'DESC');
+
+  $result = $query->execute();
+
+  /*
+  $renderable_array['explanation'] = array(
+    '#markup' => t("markup information."),
+  );
+  */
+
+  // Loop through each of our node_example nodes and instruct node_view
+  // to use our "example_node_list" view.
+  // http://api.drupal.org/api/function/node_load/7
+  // http://api.drupal.org/api/function/node_view/7
+  foreach ($result as $row) {
+    $node = node_load($row->nid);
+    $renderable_array['node_list'][]= node_view($node, 'teaser');
+  }
+
+  return $renderable_array;
+
+}

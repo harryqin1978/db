@@ -1,0 +1,10 @@
+name = Banner Slider
+description = Silence is golden.
+package = FrontCoding
+core = 7.x
+dependencies[] = image
+dependencies[] = fc_slider
+dependencies[] = fc_common
+
+version = "7.x-1.x-dev"
+core = "7.x"

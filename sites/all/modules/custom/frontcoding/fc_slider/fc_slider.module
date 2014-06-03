@@ -1,0 +1,83 @@
+<?php
+/**
+ * @file
+ * fc-slider module
+ */
+ 
+ 
+ 
+class FC_Slider {
+
+
+  private $_version;
+  private $_config;
+
+  
+  function __construct($config) {
+  
+    $this->_version = '0.2.2';
+    $this->_config = $config;
+    
+  }
+
+  
+  function get_config_value($key) {
+    if (array_key_exists($key, $this->_config)) {
+      return $this->_config[$key];
+    } else {
+      return '';
+    }
+  }
+  
+  
+  function get_outputHTML() {
+  
+    $return = '';
+    
+    $container_id = $this->get_config_value('container_id')?(' id="'.$this->get_config_value('container_id').'"'):'';
+    $container_class = $this->get_config_value('container_class')?(' '.$this->get_config_value('container_class')):'';
+    
+    // debug($this->get_config_value('height'));
+    
+    $return .= '<div class="fc_slider_container'.$container_class.'" style="width: '.$this->_config['container_width'].'px"'.$container_id.'>'."\n";
+    $return .= '  <span class="item_pos" style="display:none">0</span>'."\n";
+    $return .= '  <span class="item_size" style="display:none">'.$this->_config['item_size'].'</span>'."\n";
+    $return .= '  <span class="item_step" style="display:none">'.$this->_config['item_step'].'</span>'."\n";
+    $return .= '  <span class="item_speed" style="display:none">'.$this->_config['item_speed'].'</span>'."\n";
+    $return .= '  <span class="item_width" style="display:none">'.($this->_config['holder_width']/$this->_config['item_size']).'</span>'."\n";
+    $return .= '  <span class="hide_onmouseleave" style="display:none">'.$this->get_config_value('hide_onmouseleave').'</span>'."\n";
+    if (!$this->get_config_value('hide_arrow')) {
+      $return .= '  <div class="slider_navArrow slider_leftArrow"'.($this->get_config_value('height')?(' style="top:'.(($this->get_config_value('height')-40)/2).'px"'):'').'><a class="disableme" href="javascript:void(0)"></a></div>'."\n";
+      $return .= '  <div class="slider_navArrow slider_rightArrow"'.($this->get_config_value('height')?(' style="top:'.(($this->get_config_value('height')-40)/2).'px"'):'').'><a class="disableme" href="javascript:void(0)"></a></div>'."\n";
+    }
+    $return .= '  <div class="slider_holder" style="width: '.$this->_config['holder_width'].'px">'."\n";
+    $return .= '    <ul class="slider_holder_inner" style="width: '.($this->_config['holder_width']/$this->_config['item_size']*count($this->_config['html_contents'])).'px">'."\n";
+    foreach ($this->_config['html_contents'] as $key => $content) {
+      $return .= '      <li class="slider_item slider_item_'.$key.'" style="width: '.($this->_config['holder_width']/$this->_config['item_size']).'px">'."\n";
+      $return .= '        '.$content."\n";
+      $return .= '      </li>'."\n";
+    }
+    $return .= '      <li style="clear:both"></li>'."\n";
+    $return .= '    </ul>'."\n";
+    $return .= '  </div>'."\n";
+    if ($this->get_config_value('show_pagination')) {
+      $return .= '  <div class="slider_pagination">'."\n";
+      for ($i=0; $i<count($this->_config['html_contents']); $i++) {
+        $return .= '    <span class="slider_pageicon slider_pageicon_'.$i.'"><a href="javascript:void(0)"></a></span>'."\n";
+      }
+      $return .= '  </div>'."\n";
+    }
+    $return .= '  <div style="clear:both"></div>'."\n";
+    $return .= '</div>'."\n";
+    
+    return $return;
+    
+  }
+
+  
+  function outputHTML() {
+    echo $this->get_outputHTML();
+  }
+
+
+}

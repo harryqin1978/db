@@ -1,0 +1,17 @@
+.fc-gallery-itemlist {
+  position: relative;
+}
+
+.fc-gallery-itemlist .fc-gallery-item {
+  float: left;
+  margin-right: 10px;
+  width: 100px;
+}
+
+.fc-gallery-itemlist .fc-gallery-item a.fc-gallery-itemlink img {
+  border: 1px solid #000;
+}
+
+.fc-gallery-itemlist .fc-gallery-item .fc-gallery-title {
+  text-align: center;
+}

@@ -1,0 +1,33 @@
+<?php
+
+/**
+* Implementation of hook_permission()
+*/
+function blog_management_permission() {
+  return array(
+    'blog_management_admin_list' => array(
+      'title' => t('Administer blog list'),
+    ),
+  );
+}
+
+
+
+/**
+ * Implements hook_menu().
+ */
+function blog_management_menu() {
+
+  $items['admin/config/webmaster/blog-management'] = array(
+    'title' => 'Blog',
+    'description' => 'Blog content management.',
+    'page callback' => 'blog_management_admin',
+    'access arguments' => array('blog_management_admin_list'),
+    'position' => 'left',
+    'weight' => 1000,
+    'file' => 'blog_management.admin.inc',
+  );
+
+  return $items;
+
+}

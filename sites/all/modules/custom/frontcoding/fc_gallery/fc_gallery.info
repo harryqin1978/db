@@ -1,0 +1,11 @@
+name = Gallery
+description = Silence is golden.
+package = FrontCoding
+core = 7.x
+dependencies[] = image
+dependencies[] = fancybox
+dependencies[] = fc_common
+stylesheets[all][] = fc_gallery.css
+
+version = "7.x-1.x-dev"
+core = "7.x"

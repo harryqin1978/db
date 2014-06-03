@@ -1,0 +1,248 @@
+<?php
+
+/**
+ * Implements hook_install().
+ */
+function fc_storelocator_install() {
+
+  $t = get_t();
+  
+  $fc_storelocator = array(
+    'type' => 'fc_storelocator',
+    'name' => $t('Store Locator'),
+    'base' => 'node_content',
+    'description' => $t('Store Locator.'),
+    'title_label' => $t('Name'),
+	  'custom' => TRUE,
+	  'locked' => TRUE,
+  );
+
+  $content_type = node_type_set_defaults($fc_storelocator);
+
+  // node_add_body_field($content_type, $t('Description'));
+
+  node_type_save($content_type);
+
+  // $body_instance = field_info_instance('node', 'body', 'fc_storelocator');
+
+  // field_update_instance($body_instance);
+
+  foreach (_fc_storelocator_installed_fields() as $field) {
+    field_create_field($field);
+  }
+
+  foreach (_fc_storelocator_installed_instances() as $instance) {
+    $instance['entity_type'] = 'node';
+    $instance['bundle'] = $fc_storelocator['type'];
+    field_create_instance($instance);
+  }
+  
+}
+
+
+
+/**
+ * Implements hook_uninstall().
+ */
+function fc_storelocator_uninstall() {
+
+  $sql = 'SELECT nid FROM {node} n WHERE n.type = :type';
+  $result = db_query($sql, array(':type' => 'fc_storelocator'));
+  $nids = array();
+  foreach ($result as $row) {
+    $nids[] = $row->nid;
+  }
+
+  node_delete_multiple($nids);
+
+  foreach (array_keys(_fc_storelocator_installed_fields()) as $field) {
+    field_delete_field($field);
+  }
+
+  $instances = field_info_instances('node', 'fc_storelocator');
+  foreach ($instances as $instance_name => $instance) {
+    field_delete_instance($instance);
+  }
+
+  node_type_delete('fc_storelocator');
+
+  field_purge_batch(1000);
+
+}
+
+
+
+function fc_storelocator_enable() {
+
+  // drupal_set_message('call fc_storelocator_enable function.');
+
+}
+
+
+
+function fc_storelocator_disable() {
+
+  // drupal_set_message('call fc_storelocator_disable function.');
+
+}
+
+
+
+function _fc_storelocator_installed_fields() {
+  $t = get_t();
+  return array(
+
+    'fc_storelocator_showorder' => array(
+      'field_name' => 'fc_storelocator_showorder',
+      'cardinality' => 1,
+      'type'        => 'number_integer',
+      'settings'    => array(
+        'max_length' => 5,
+      ),
+    ),
+
+    'fc_storelocator_address' => array(
+      'field_name' => 'fc_storelocator_address',
+      'cardinality' => 1,
+      'type'        => 'text_long',
+      'settings'    => array(
+      ),
+    ),
+
+    'fc_storelocator_phone' => array(
+      'field_name' => 'fc_storelocator_phone',
+      'cardinality' => 1,
+      'type'        => 'phone',
+      'settings'    => array(
+        'country' => 'int',
+      ),
+    ),
+
+    'fc_storelocator_email' => array(
+      'field_name' => 'fc_storelocator_email',
+      'cardinality' => 1,
+      'type'        => 'email',
+      'settings'    => array(
+      ),
+    ),
+
+    'fc_storelocator_ycoord' => array(
+      'field_name' => 'fc_storelocator_ycoord',
+      'cardinality' => 1,
+      'type'        => 'number_float',
+      'settings'    => array(
+        'max_length' => 20,
+        'decimal_separator' => ".",
+      ),
+    ),
+
+    'fc_storelocator_xcoord' => array(
+      'field_name' => 'fc_storelocator_xcoord',
+      'cardinality' => 1,
+      'type'        => 'number_float',
+      'settings'    => array(
+        'max_length' => 20,
+        'decimal_separator' => ".",
+      ),
+    ),
+
+  );
+}
+
+
+
+function _fc_storelocator_installed_instances() {
+  $t = get_t();
+  return array(
+
+    'fc_storelocator_showorder' => array(
+      'field_name' => 'fc_storelocator_showorder',
+      'label'       => $t('Show order'),
+      'required'    => TRUE,
+      'default_value' => array(array('value' => 5)),
+      'widget'      => array(
+        'type'    => 'number',
+      ),
+      'display' => array(
+        'default' => array(
+          'label' => 'hidden',
+          'type' => 'hidden',
+        ),
+      ),
+    ),
+
+    'fc_storelocator_address' => array(
+      'field_name' => 'fc_storelocator_address',
+      'label'       => $t('Address'),
+      'required'    => TRUE,
+      'widget'      => array(
+        'type'    => 'text_textarea',
+      ),
+      'settings'    => array(
+        'text_processing' => 0,
+      ),
+    ),
+
+    'fc_storelocator_phone' => array(
+      'field_name' => 'fc_storelocator_phone',
+      'label'       => $t('Telephone'),
+      'widget'      => array(
+        'type'    => 'phone_textfield',
+      ),
+      'settings'    => array(
+        'phone_default_country_code' => '86',
+        'phone_int_max_length' => 50,
+      ),
+    ),
+
+    'fc_storelocator_email' => array(
+      'field_name' => 'fc_storelocator_email',
+      'label'       => $t('Email'),
+      'widget'      => array(
+        'type'    => 'email_textfield',
+      ),
+      'settings'    => array(
+      ),
+    ),
+
+    'fc_storelocator_ycoord' => array(
+      'field_name' => 'fc_storelocator_ycoord',
+      'label'       => $t('Earth dimension coordinate : -90(south) to 90(north)'),
+      'description' => $t('Use for google map store locator.'),
+      'widget'      => array(
+        'type'    => 'number',
+      ),
+      'settings'    => array(
+        'min' => -90,
+        'max' => 90,
+      ),
+      'display' => array(
+        'default' => array(
+          'label' => 'hidden',
+          'type' => 'hidden',
+        ),
+      ),
+    ),
+
+    'fc_storelocator_xcoord' => array(
+      'field_name' => 'fc_storelocator_xcoord',
+      'label'       => $t('Earth longitude coordinate : -180(west) to 180(east)'),
+      'description' => $t('Use for google map store locator.'),
+      'widget'      => array(
+        'type'    => 'number',
+      ),
+      'settings'    => array(
+        'min' => -180,
+        'max' => 180,
+      ),
+      'display' => array(
+        'default' => array(
+          'label' => 'hidden',
+          'type' => 'hidden',
+        ),
+      ),
+    ),
+
+  );
+}
+

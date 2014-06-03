@@ -1,0 +1,277 @@
+<?php
+
+
+
+/**
+* Implementation of hook_permission()
+*/
+function fc_storelocator_permission() {
+  return array(
+    'fc storelocator admin stores' => array(
+      'title' => t('Administer storelocator stores'),
+    ),
+    'fc storelocator goole map setting' => array(
+      'title' => t('Administer storelocator google map setting'),
+    ),
+  );
+}
+
+
+
+/**
+ * Implements hook_menu().
+ */
+function fc_storelocator_menu() {
+
+  $items['admin/config/webmaster/fc-storelocator'] = array(
+    'title' => 'Store Locator',
+    'description' => 'Store locator content management.',
+    'page callback' => 'fc_storelocator_admin',
+    'access arguments' => array('fc storelocator admin stores'),
+    'position' => 'left',
+    'weight' => 1000,
+    'file' => 'fc_storelocator.admin.inc',
+  );
+
+  $items['admin/config/webmaster/fc-storelocator/store-list'] = array(
+    'title' => 'Store List',
+    'access arguments' => array('fc storelocator admin stores'),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+    'file' => 'fc_storelocator.admin.inc',
+  );
+
+  $items['admin/config/webmaster/fc-storelocator/google-map-setting'] = array(
+    'title' => 'Google Map Setting',
+    'description' => '',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('fc_storelocator_google_map_setting'),
+    'access arguments' => array('fc storelocator goole map setting'),
+    'file' => 'fc_storelocator.admin.inc',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => -9,
+  );
+
+  $items['storelocator'] = array(
+    'page callback' => 'fc_storelocator_page',
+    'access arguments' => array('access content'),
+    'title' => 'Store locator',
+  );
+
+  $items['storelocator/google'] = array(
+    'page callback' => 'fc_storelocator_google',
+    'access arguments' => array('access content'),
+    'title' => 'Google store locator',
+  );
+
+  $items['storelocator/google/data.csv'] = array(
+    'page callback' => 'fc_storelocator_google_data',
+    'access arguments' => array('access content'),
+    'title' => 'Google store locator data file',
+  );
+
+  return $items;
+
+}
+
+
+
+function fc_storelocator_page() {
+
+  $renderable_array = array();
+
+  global $language;
+
+  $query = db_select('node', 'n');
+  $query->join('field_data_fc_storelocator_showorder', 'so', 'n.nid=so.entity_id AND n.vid=so.revision_id');
+  $query->condition('n.type', 'fc_storelocator', '=');
+  $query->condition('n.status', 1, '=');
+  $query->condition('n.language', array(LANGUAGE_NONE, $language->language), 'IN');
+  $query->condition('so.entity_type', 'node', '=');
+  $query->condition('so.bundle', 'fc_storelocator', '=');
+  $query->fields('n', array('nid', 'type', 'language', 'title', 'uid', 'status', 'created', 'changed'));
+  $query->fields('so', array('fc_storelocator_showorder_value'));
+  $query->orderBy('so.fc_storelocator_showorder_value', 'ASC');
+  $query->orderBy('n.created', 'DESC');
+
+  $result = $query->execute();
+
+  /*
+  $renderable_array['explanation'] = array(
+    '#markup' => t("markup information."),
+  );
+  */
+
+  foreach ($result as $row) {
+    $node = node_load($row->nid);
+    $renderable_array['node_list'][]= node_view($node, 'teaser');
+  }
+
+  return $renderable_array;
+
+}
+
+
+
+function fc_storelocator_google_data() {
+
+  $return = theme(
+    'fc_storelocator_google_data', array(
+      'nodes' => _fc_storelocator_google_data(),
+    )
+  );
+  
+  header("Content-Type: text/csv; charset=utf-8");
+  die($return);
+  
+  // return 'x';
+
+}
+
+
+
+function _fc_storelocator_google_data() {
+
+  global $language;
+
+  $query = db_select('node', 'n');
+  $query->join('field_data_fc_storelocator_showorder', 'so', 'n.nid=so.entity_id AND n.vid=so.revision_id');
+  $query->condition('n.type', 'fc_storelocator', '=');
+  $query->condition('n.status', 1, '=');
+  $query->condition('n.language', array(LANGUAGE_NONE, $language->language), 'IN');
+  $query->condition('so.entity_type', 'node', '=');
+  $query->condition('so.bundle', 'fc_storelocator', '=');
+  $query->fields('n', array('nid', 'type', 'language', 'title', 'uid', 'status', 'created', 'changed'));
+  $query->fields('so', array('fc_storelocator_showorder_value'));
+  $query->orderBy('so.fc_storelocator_showorder_value', 'ASC');
+  $query->orderBy('n.created', 'DESC');
+
+  $result = $query->execute();
+
+  $_nodes = array();
+  
+  foreach ($result as $index => $item) {
+  
+    $_node = node_load($item->nid);
+
+    if(isset($_node->fc_storelocator_ycoord['und']) && isset($_node->fc_storelocator_xcoord['und'])) {
+  
+      $_detail = check_plain($_node->fc_storelocator_address['und'][0]['value']);
+      if (isset($_node->fc_storelocator_phone['und'])) $_detail .= '<br />' . $_node->fc_storelocator_phone['und'][0]['value'];
+      if (isset($_node->fc_storelocator_email['und'])) $_detail .= '<br />' . $_node->fc_storelocator_email['und'][0]['email'];
+  
+      $_nodes[] = array(
+        'nid' => $_node->nid,
+        'ycoord' => $_node->fc_storelocator_ycoord['und'][0]['value'],
+        'xcoord' => $_node->fc_storelocator_xcoord['und'][0]['value'],
+        'title' => check_plain($_node->title),
+        'detail' => $_detail,
+      );
+      
+    }
+  
+  }
+  
+  return $_nodes;
+
+}
+
+
+
+function fc_storelocator_google() {
+
+  drupal_add_js('//maps.googleapis.com/maps/api/js?sensor=false&libraries=places', 'external');
+  drupal_add_js(drupal_get_path('module', 'fc_storelocator') . '/js/google/store-locator.compiled.js');
+  drupal_add_js(drupal_get_path('module', 'fc_storelocator') . '/js/google/medicare-static-ds.js');
+  drupal_add_js(drupal_get_path('module', 'fc_storelocator') . '/js/google/panel.js');
+  drupal_add_css(drupal_get_path('module', 'fc_storelocator') . '/css/google/storelocator.css');
+  
+  $_nodes = _fc_storelocator_google_data();
+  
+  $xcoords = array();
+  $ycoords = array();
+  
+  foreach ($_nodes as $item) {
+    $xcoords[] = (float) $item['xcoord'];
+    $ycoords[] = (float) $item['ycoord'];
+  }
+  
+  $xcenter = (min($xcoords) + max($xcoords)) / 2;
+  $ycenter = (min($ycoords) + max($ycoords)) / 2;
+  
+  $exposed_settings['xcenter'] = $xcenter;
+  $exposed_settings['ycenter'] = $ycenter;
+  $exposed_settings['xcoords'] = $xcoords;
+  $exposed_settings['ycoords'] = $ycoords;
+  
+  $marker_fid = variable_get('fc_storelocator_google_map_marker_fid', '');
+  if ($marker_fid && $_file = file_load($marker_fid)) {
+    $exposed_settings['markerimage_url'] = file_create_url($_file->uri);
+  }
+  
+  $exposed_settings['marker_offset_x'] = variable_get('fc_storelocator_google_map_marker_offset_x', '');
+  $exposed_settings['marker_offset_y'] = variable_get('fc_storelocator_google_map_marker_offset_y', '');
+  
+  // $exposed_settings['csv_filepath'] = base_path() . drupal_get_path('module', 'fc_storelocator') . '/medicare.csv';
+  $exposed_settings['csv_filepath'] = url('storelocator/google/data.csv');
+  drupal_add_js(array('fc_storelocator_google' => $exposed_settings), 'setting');
+
+  return theme(
+    'fc_storelocator_google', array(
+    )
+  );
+
+}
+
+
+
+/**
+ * Implements hook_theme().
+ *
+ * This lets us tell Drupal about our theme functions and their arguments.
+ */
+function fc_storelocator_theme() {
+  return array(
+
+    'fc_storelocator_google' => array(
+      'variables' => array(
+        'nodes' => array(),
+      ),
+      'template' => 'fc_storelocator_google',
+    ),
+
+    'fc_storelocator_google_data' => array(
+      'variables' => array(
+      ),
+      'template' => 'fc_storelocator_google_data',
+    ),
+
+  );
+}
+
+
+
+/**
+ * Implements hook_node_view().
+ */
+function fc_storelocator_node_view($node, $build_mode = 'full') {
+
+  if ($node->type == 'fc_storelocator' && ($build_mode=='full' || $build_mode=='teaser')) {
+    
+    $address = $node->fc_storelocator_address['und'][0]['value'];
+    
+    $node->content['link_map_google'] = array(
+      '#markup' => l(
+        t('View google map'),
+        'http://ditu.google.cn/maps?f=q&source=embed&hl=zh-CN&geocode=&q='.$address
+      ),
+      '#weight' => 9999,
+    );
+    
+  }
+
+}
+
+
+
+

@@ -1,0 +1,558 @@
+<?php
+
+function fc_gallery_init() {
+
+  // drupal_add_js(drupal_get_path('module', 'fc_gallery') . '/fc_gallery.js');
+    
+}
+
+
+
+/**
+ * Implements hook_image_default_styles().
+ */
+function fc_gallery_image_default_styles() {
+  $styles = array();
+  $styles['fc_gallery_thumbnail'] = array(
+    'effects' => array(
+      array(
+        // @todo We want to not upscale if the user uploads a smaller image, but
+        //   image_scale_and_crop doesn't support that option. Try to get
+        //   http://drupal.org/node/872206 into core, or solve it in contrib.
+        'name' => 'image_scale_and_crop',
+        'data' => array('width' => 100, 'height' => 100, 'upscale' => TRUE),
+        'weight' => 0,
+      ),
+    )
+  );
+  $styles['fc_gallery_mini'] = array(
+    'effects' => array(
+      array(
+        // @todo We want to not upscale if the user uploads a smaller image, but
+        //   image_scale_and_crop doesn't support that option. Try to get
+        //   http://drupal.org/node/872206 into core, or solve it in contrib.
+        'name' => 'image_scale_and_crop',
+        'data' => array('width' => 50, 'height' => 50, 'upscale' => TRUE),
+        'weight' => 0,
+      ),
+    )
+  );
+  $styles['fc_gallery_large'] = array(
+    'effects' => array(
+      array(
+        'name' => 'image_scale',
+        'data' => array('width' => 640, 'height' => 480, 'upscale' => FALSE),
+        'weight' => 0,
+      ),
+    )
+  );
+  return $styles;
+}
+
+
+
+/**
+* Implementation of hook_permission()
+*/
+function fc_gallery_permission() {
+  return array(
+    'fc gallery admin album' => array(
+      'title' => t('Administer gallery album'),
+    ),
+    'fc gallery admin gallery' => array(
+      'title' => t('Administer gallery gallery'),
+    ),
+    'fc gallery admin picture' => array(
+      'title' => t('Administer gallery picture'),
+    ),
+  );
+}
+
+
+
+/**
+ * Implements hook_menu().
+ */
+function fc_gallery_menu() {
+
+  $items['admin/config/webmaster/fc-gallery'] = array(
+    'title' => 'Gallery',
+    'description' => 'Gallery content management.',
+    'page callback' => 'fc_gallery_picture_admin',
+    'access arguments' => array('fc gallery admin picture'),
+    'file' => 'fc_gallery.admin.inc',
+  );
+
+  $items['admin/config/webmaster/fc-gallery/picture-list'] = array(
+    'title' => 'Picture List',
+    'access arguments' => array('fc gallery admin picture'),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+    'file' => 'fc_gallery.admin.inc',
+  );
+
+  $items['admin/config/webmaster/fc-gallery/gallery-list'] = array(
+    'title' => 'Gallery List',
+    'page callback' => 'fc_gallery_gallery_admin',
+    'access arguments' => array('fc gallery admin gallery'),
+    'file' => 'fc_gallery.admin.inc',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => -9,
+  );
+
+  $items['admin/config/webmaster/fc-gallery/album-list'] = array(
+    'title' => 'Album List',
+    'page callback' => 'fc_gallery_album_admin',
+    'access arguments' => array('fc gallery admin album'),
+    'file' => 'fc_gallery.admin.inc',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => -8,
+  );
+
+  $items['album-list'] = array(
+    'page callback' => 'fc_gallery_album_list',
+    'access arguments' => array('access content'),
+    'title' => 'Gallery - All albums',
+  );
+
+  return $items;
+
+}
+
+
+
+/**
+ * Implements hook_theme().
+ *
+ * This lets us tell Drupal about our theme functions and their arguments.
+ */
+function fc_gallery_theme() {
+  return array(
+
+    'fc_gallery_itemlist' => array(
+      'variables' => array(
+        'items' => array(),
+        'fancybox' => FALSE, 
+      ),
+      'template' => 'fc_gallery_itemlist',
+    ),
+
+  );
+}
+
+
+
+function fc_gallery_album_list() {
+
+  global $language;
+
+  $query = db_select('node', 'n');
+  $query->join('field_data_fc_album_showorder', 'so', 'n.nid=so.entity_id AND n.vid=so.revision_id');
+  $query->condition('n.status', 1, '=')
+    ->condition('n.language', array(LANGUAGE_NONE, $language->language), 'IN')
+    ->condition('n.type', 'fc_album', '=')
+    ->condition('so.entity_type', 'node', '=')
+    ->condition('so.bundle', 'fc_album', '=')
+    ->orderBy('so.fc_album_showorder_value', 'ASC')
+    ->fields('n', array('nid', 'title'));
+
+  user_build_filter_query($query);      
+  $result = $query->execute();
+  
+  $items = array();
+  
+  foreach ($result as $item) {
+    $pnid = db_query(
+      "SELECT gg.pnid FROM {fc_gallery_gallery_group} gg, {fc_gallery_album_group} ag WHERE gg.gnid = ag.gnid AND ag.anid = :anid LIMIT 0, 1",
+      array(':anid' => $item->nid)
+    )->fetchField();
+    if ($pnid && $node = node_load($pnid)) {
+      $uri = $node->fc_picture_picture['und'][0]['uri'];
+      $picture = theme('image_style', array('style_name' => 'fc_gallery_thumbnail', 'path' => $uri, 'getsize' => FALSE));
+      // $picture_realurl = file_create_url($uri);
+    } else {
+      $picture = '<img typeof="foaf:Image" src="' . base_path() . drupal_get_path('module', 'fc_gallery') . '/images/empty.jpg' . '" width="100" height="100" alt="" />';
+    }
+    $items[] = array(
+      'picture' => $picture,
+      'link' => 'node/'.$item->nid,
+      'title' => check_plain($item->title),
+      'title_native' => $item->title,
+    );
+  }
+  
+  return theme(
+    'fc_gallery_itemlist', array(
+      'items' => $items,
+      'fancybox' => FALSE,
+    )
+  );
+  
+}
+
+
+
+/**
+ * Implements hook_form_alter().
+ */
+function fc_gallery_form_alter(&$form, $form_state, $form_id) {
+
+  if ($form_id == 'fc_gallery_node_form') {
+  
+    $query = db_select('node', 'n');
+    $query->join('field_data_fc_album_showorder', 'so', 'n.nid=so.entity_id AND n.vid=so.revision_id');
+    $query->condition('n.status', 1, '=')
+      ->condition('n.type', 'fc_album', '=')
+      ->condition('so.entity_type', 'node', '=')
+      ->condition('so.bundle', 'fc_album', '=')
+      ->orderBy('so.fc_album_showorder_value', 'ASC')
+      ->fields('n', array('nid', 'type', 'language', 'title', 'uid', 'status', 'created', 'changed'));
+
+    $result = $query->execute();
+  
+    if (!isset($form['#node']->anid)) {
+      $options = array('' => t('---Please select---'));
+    }
+    foreach ($result as $row) {
+      $options[$row->nid] = check_plain($row->title);
+    }
+    
+    $form['anid'] = array(
+      '#type' => 'select',
+      '#title' => t('Album'),
+      '#options' => $options,
+      '#required' => TRUE,
+      '#weight' => -1,
+      '#default_value' => isset($form['#node']->anid) ? $form['#node']->anid : '',
+    );
+  
+  }
+
+  if ($form_id == 'fc_picture_node_form') {
+  
+    $query = db_select('node', 'n');
+    $query->join('field_data_fc_gallery_showorder', 'so', 'n.nid=so.entity_id AND n.vid=so.revision_id');
+    $query->join('fc_gallery_album_group', 'ag', 'ag.gnid=n.nid');
+    $query->join('node', 'n_album', 'n_album.nid=ag.anid');
+    $query->join('field_data_fc_album_showorder', 'so_album', 'n_album.nid=so_album.entity_id AND n_album.vid=so_album.revision_id');
+    $query->condition('n.status', 1, '=')
+      ->condition('n.type', 'fc_gallery', '=')
+      ->condition('so.entity_type', 'node', '=')
+      ->condition('so.bundle', 'fc_gallery', '=')
+      ->orderBy('so_album.fc_album_showorder_value', 'ASC')
+      ->orderBy('so.fc_gallery_showorder_value', 'ASC')
+      ->fields('n', array('nid', 'type', 'language', 'title', 'uid', 'status', 'created', 'changed'))
+      ->fields('ag', array('anid'))
+      ->addField('n_album', 'title', 'album_title');
+
+    $result = $query->execute();
+  
+    if (!isset($form['#node']->gnid)) {
+      $options = array('' => t('---Please select---'));
+    }
+    foreach ($result as $row) {
+      $options[$row->nid] = check_plain($row->album_title).' -> '.check_plain($row->title);
+    }
+    
+    $form['gnid'] = array(
+      '#type' => 'select',
+      '#title' => t('Gallery'),
+      '#options' => $options,
+      '#required' => TRUE,
+      '#weight' => -1,
+      '#default_value' => isset($form['#node']->gnid) ? $form['#node']->gnid : '',
+    );
+  
+  }
+
+}
+
+
+
+/**
+ * Implements hook_node_insert().
+ *
+ */
+function fc_gallery_node_insert($node) {
+  
+  if ($node->type == 'fc_gallery') {
+    // Notice that we are ignoring any revision information using $node->nid
+    db_insert('fc_gallery_album_group')
+    ->fields(array(
+        'anid' => $node->anid,
+        'gnid' => $node->nid,
+    ))
+    ->execute();
+  }
+
+  if ($node->type == 'fc_picture') {
+    // Notice that we are ignoring any revision information using $node->nid
+    db_insert('fc_gallery_gallery_group')
+    ->fields(array(
+        'gnid' => $node->gnid,
+        'pnid' => $node->nid,
+    ))
+    ->execute();
+  }
+
+}
+
+
+
+/**
+ * Implements hook_node_load().
+ */
+function fc_gallery_node_load($nodes, $types) {
+
+  foreach ($nodes as $node) {
+
+    if ($node->type == 'fc_gallery') {
+      $anid = db_select('fc_gallery_album_group', 'ag')
+      ->fields('ag', array('anid'))
+      ->where('ag.gnid = :gnid', array(':gnid' => $node->nid))
+      ->execute()->fetchField();
+      $node->anid = $anid;
+    }
+
+    if ($node->type == 'fc_picture') {
+      $gnid = db_select('fc_gallery_gallery_group', 'gg')
+      ->fields('gg', array('gnid'))
+      ->where('gg.pnid = :pnid', array(':pnid' => $node->nid))
+      ->execute()->fetchField();
+      $node->gnid = $gnid;
+    }
+
+  }
+
+}
+
+
+
+/**
+ * Implements hook_node_update().
+ */
+function fc_gallery_node_update($node) {
+  
+  if ($node->type == 'fc_gallery') {
+    $found = db_select('fc_gallery_album_group', 'ag')
+      ->fields('ag', array(
+        'anid',
+      ))
+      ->where('ag.gnid = (:gnid)', array(':gnid' => $node->nid))
+      ->execute()->fetchField();
+
+    if ($found) {
+      db_update('fc_gallery_album_group')
+        ->fields(array('anid' => $node->anid))
+        ->condition('gnid', $node->nid)
+        ->execute();
+    }
+    else {
+      fc_gallery_node_insert($node);
+    }
+  }
+  
+  if ($node->type == 'fc_picture') {
+    $found = db_select('fc_gallery_gallery_group', 'gg')
+      ->fields('gg', array(
+        'gnid',
+      ))
+      ->where('gg.pnid = (:pnid)', array(':pnid' => $node->nid))
+      ->execute()->fetchField();
+
+    if ($found) {
+      db_update('fc_gallery_gallery_group')
+        ->fields(array('gnid' => $node->gnid))
+        ->condition('pnid', $node->nid)
+        ->execute();
+    }
+    else {
+      fc_gallery_node_insert($node);
+    }
+  }
+  
+}
+
+
+
+/**
+ * Implements hook_node_delete().
+ */
+function fc_gallery_node_delete($node) {
+  db_delete('fc_gallery_album_group')
+    ->condition('gnid', $node->nid)
+    ->execute();
+}
+
+
+
+/**
+ * Implements hook_node_view().
+ */
+function fc_gallery_node_view($node, $build_mode = 'full') {
+
+  global $language;
+
+  if ($node->type == 'fc_album' && $build_mode=='full') {
+
+    $breadcrumb = drupal_get_breadcrumb();
+    $breadcrumb[] = l('Gallery', 'album-list');
+    drupal_set_breadcrumb($breadcrumb);
+    
+    $query = db_select('node', 'n');
+    $query->join('field_data_fc_gallery_showorder', 'so', 'n.nid=so.entity_id AND n.vid=so.revision_id');
+    $query->join('fc_gallery_album_group', 'ag', 'ag.gnid = n.nid');
+    $query->condition('n.status', 1, '=')
+      ->condition('n.language', array(LANGUAGE_NONE, $language->language), 'IN')
+      ->condition('n.type', 'fc_gallery', '=')
+      ->condition('so.entity_type', 'node', '=')
+      ->condition('so.bundle', 'fc_gallery', '=')
+      ->condition('ag.anid', $node->nid, '=')
+      ->orderBy('so.fc_gallery_showorder_value', 'ASC')
+      ->fields('n', array('nid', 'title'));
+
+    user_build_filter_query($query);      
+    $result = $query->execute();
+    
+    $items = array();
+    
+    foreach ($result as $item) {
+      $pnid = db_query(
+        "SELECT gg.pnid FROM {fc_gallery_gallery_group} gg WHERE gg.gnid = :gnid LIMIT 0, 1",
+        array(':gnid' => $item->nid)
+      )->fetchField();
+      if ($pnid && $_node = node_load($pnid)) {
+        $uri = $_node->fc_picture_picture['und'][0]['uri'];
+        $picture = theme('image_style', array('style_name' => 'fc_gallery_thumbnail', 'path' => $uri, 'getsize' => FALSE));
+        // $picture_realurl = file_create_url($uri);
+      } else {
+        $picture = '<img typeof="foaf:Image" src="' . base_path() . drupal_get_path('module', 'fc_gallery') . '/images/empty.jpg' . '" width="100" height="100" alt="" />';
+      }
+      $items[] = array(
+        'picture' => $picture,
+        'link' => 'node/'.$item->nid,
+        'title' => check_plain($item->title),
+        'title_native' => $item->title,
+      );
+    }
+    
+    $node->content['gallery_list'] = array(
+      '#markup' => theme(
+        'fc_gallery_itemlist', array(
+          'items' => $items,
+          'fancybox' => FALSE,
+          'relkey' => '',
+        )
+      ),
+      '#weight' => 9999,
+    );
+
+  }
+  
+  if ($node->type == 'fc_gallery' && $build_mode=='full') {
+
+    drupal_add_js(libraries_get_path('fancybox') . '/jquery.mousewheel-3.0.4.pack.js');
+    drupal_add_js(drupal_get_path('module', 'fc_gallery') . '/fc_gallery.js');
+
+    $breadcrumb = drupal_get_breadcrumb();
+    $breadcrumb[] = l(t('Gallery'), 'album-list');
+
+    if ($anid = db_query("SELECT ag.anid FROM {fc_gallery_album_group} ag WHERE ag.gnid = :gnid LIMIT 0, 1", array(':gnid' => $node->nid))->fetchField()) {
+      if ($atitle = db_query("SELECT title FROM {node} WHERE nid = :nid LIMIT 0, 1", array(':nid' => $anid))->fetchField()) {
+        $breadcrumb[] = l($atitle, 'node/'.$anid);
+      }
+    }
+
+    drupal_set_breadcrumb($breadcrumb);
+    
+    $query = db_select('node', 'n');
+    $query->join('field_data_fc_picture_showorder', 'so', 'n.nid=so.entity_id AND n.vid=so.revision_id');
+    $query->join('fc_gallery_gallery_group', 'gg', 'gg.pnid = n.nid');
+    $query->condition('n.status', 1, '=')
+      ->condition('n.language', array(LANGUAGE_NONE, $language->language), 'IN')
+      ->condition('n.type', 'fc_picture', '=')
+      ->condition('so.entity_type', 'node', '=')
+      ->condition('so.bundle', 'fc_picture', '=')
+      ->condition('gg.gnid', $node->nid, '=');
+      
+    user_build_filter_query($query);
+
+    $count_query = clone $query;
+    $count_query->addExpression('COUNT(n.nid)');
+
+    $query = $query->extend('PagerDefault');
+
+    $query->orderBy('so.fc_picture_showorder_value', 'ASC')
+      ->fields('n', array('nid', 'title'));
+
+    $query
+      ->limit(12)
+      ->setCountQuery($count_query);
+
+    $result = $query->execute();
+    
+    $items = array();
+    
+    foreach ($result as $item) {
+      $pnid = $item->nid;
+      if ($pnid && $_node = node_load($pnid)) {
+        $uri = $_node->fc_picture_picture['und'][0]['uri'];
+        $picture = theme('image_style', array('style_name' => 'fc_gallery_thumbnail', 'path' => $uri, 'getsize' => FALSE));
+        $picture_realurl = file_create_url($uri);
+      } else {
+        $picture_realurl = '';
+        $picture = '<img typeof="foaf:Image" src="' . base_path() . drupal_get_path('module', 'fc_gallery') . '/images/empty.jpg' . '" width="100" height="100" alt="" />';
+      }
+      $items[] = array(
+        'picture' => $picture,
+        'link' => $picture_realurl,
+        'title' => check_plain($item->title),
+        'title_native' => isset($_node->body['und']) ? $_node->body['und'][0]['value'] : '',
+      );
+    }
+    
+    $node->content['gallery_list'] = array(
+      '#markup' => theme(
+        'fc_gallery_itemlist', array(
+          'items' => $items,
+          'fancybox' => TRUE,
+          'relkey' => 'fc-gallery-'.$node->nid,
+        )
+      ),
+      '#weight' => 9999,
+    );
+    $node->content['gallery_list_pager'] = array(
+      '#markup' => theme('pager'),
+      '#weight' => 10000,
+    );
+
+    $build['pager'] = array('#theme' => 'pager');
+
+  }
+
+  if ($node->type == 'fc_picture' && $build_mode=='full') {
+  
+    drupal_add_js(drupal_get_path('module', 'fc_gallery') . '/fc_gallery.js');
+
+    $breadcrumb = drupal_get_breadcrumb();
+    $breadcrumb[] = l(t('Gallery'), 'album-list');
+
+    if ($gnid = db_query("SELECT gg.gnid FROM {fc_gallery_gallery_group} gg WHERE gg.pnid = :pnid LIMIT 0, 1", array(':pnid' => $node->nid))->fetchField()) {
+      if ($gtitle = db_query("SELECT title FROM {node} WHERE nid = :nid LIMIT 0, 1", array(':nid' => $gnid))->fetchField()) {
+        if ($anid = db_query("SELECT ag.anid FROM {fc_gallery_album_group} ag WHERE ag.gnid = :gnid LIMIT 0, 1", array(':gnid' => $gnid))->fetchField()) {
+          if ($atitle = db_query("SELECT title FROM {node} WHERE nid = :nid LIMIT 0, 1", array(':nid' => $anid))->fetchField()) {
+            $breadcrumb[] = l($atitle, 'node/'.$anid);
+            $breadcrumb[] = l($gtitle, 'node/'.$gnid);
+          }
+        }
+      }
+    }
+
+    drupal_set_breadcrumb($breadcrumb);
+
+  }
+
+}
+
+
+

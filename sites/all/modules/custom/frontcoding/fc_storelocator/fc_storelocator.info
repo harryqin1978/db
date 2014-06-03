@@ -1,0 +1,10 @@
+name = Store Locator
+description = Silence is golden.
+package = FrontCoding
+core = 7.x
+dependencies[] = phone
+dependencies[] = email
+dependencies[] = fc_common
+
+version = "7.x-1.x-dev"
+core = "7.x"

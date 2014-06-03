@@ -1,0 +1,15 @@
+<?php
+
+/**
+ * Implements hook_install().
+ */
+function fc_custom_install() {
+  // Make sure we are the last loaded module.
+  db_update('system')
+    ->fields(array('weight' => 99999))
+    ->condition('type', 'module')
+    ->condition('name', 'fc_custom')
+    ->execute();
+}
+
+

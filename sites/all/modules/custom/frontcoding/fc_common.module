@@ -1,0 +1,21 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function fc_common_menu() {
+
+  $items['admin/config/webmaster'] = array(
+   'title' => 'Webmaster Tool',
+   'description' => 'Webmaster Tool.',
+   'position' => 'left',
+   'weight' => -20,
+   'page callback' => 'system_admin_menu_block_page',
+   'access arguments' => array('access administration pages'),
+   'file' => 'system.admin.inc',
+   'file path' => drupal_get_path('module', 'system'),
+  );
+  
+  return $items;
+  
+}

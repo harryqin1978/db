@@ -1,0 +1,119 @@
+.fc_slider_container {
+  position: relative;
+}
+
+.fc_slider_container .slider_navArrow {
+  position: absolute;
+	padding: 0 0 0 0;
+  margin: 0 0 0 0;
+  float: none;
+  top: 40px;
+  width: 25px;
+  height: 40px;
+  z-index: 100;
+}
+
+.fc_slider_container .slider_leftArrow {
+  left: 0px;
+}
+
+.fc_slider_container .slider_rightArrow {
+  right: 0px;
+}
+
+.fc_slider_container .slider_navArrow a {
+  background-image: url("slide-button.png");
+  _background-image: url("slide-button.gif");
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+  background-color: transparent;
+	width:25px;
+	height:40px;
+	display:block;
+	padding: 0 0 0 0;
+	margin: 0 0 0 0;
+}
+
+.fc_slider_container .slider_leftArrow a{
+	background-position: -24px -40px;
+}
+
+.fc_slider_container .slider_leftArrow a.disableme{
+	background-position: -24px 0 !important;
+}
+
+.fc_slider_container .slider_leftArrow a.hoverme{
+	background-position: -24px -80px;
+}
+
+.fc_slider_container .slider_rightArrow a{
+	background-position: 0 -40px;
+}
+
+.fc_slider_container .slider_rightArrow a.disableme{
+	background-position: 0 0 !important;
+}
+
+.fc_slider_container .slider_rightArrow a.hoverme{
+	background-position: 0 -80px;
+}
+
+.fc_slider_container .slider_holder {
+  position: relative;
+  margin: 0px auto;
+  padding: 0 0 0 0;
+  overflow: hidden;
+}
+
+.fc_slider_container .slider_holder_inner {
+  position: relative;
+  list-style: none outside none;
+  margin: 0 0 0 0;
+  padding: 0 0 0 0;
+}
+
+.fc_slider_container .slider_item {
+  float: left;
+  min-height: 120px;
+  list-style: none outside none;
+}
+
+.fc_slider_container .slider_pagination {
+  height: 20px;
+  width: 100%;
+  margin: 10px 0 0 0;
+  _margin: 10px 0 -10px 0;
+  padding: 0 0 0 0;
+  text-align: center;
+  line-height: 10px;
+}
+
+.fc_slider_container .slider_pageicon {
+  width: 10px;
+  height: 10px;
+  margin: 0 2px;
+  _margin: 0 4px;
+  display: inline-block;
+}
+
+.fc_slider_container .slider_pageicon a {
+  background-image: url("slide-dot.png");
+  _background-image: url("slide-dot.gif");
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+  background-color: transparent;
+  width: 10px;
+  height: 10px;
+	padding: 0 0 0 0;
+	margin: 0 0 0 0;
+	background-position: -20px 0;
+	display: block;
+}
+
+.fc_slider_container .slider_pageicon a.activeme {
+  	background-position: -10px 0;
+}
+
+.fc_slider_container .slider_pageicon a.hoverme {
+  	background-position: 0 0;
+}

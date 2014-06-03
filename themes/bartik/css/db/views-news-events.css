@@ -1,0 +1,66 @@
+.news-listings ul{
+  margin: 0;
+  padding: 0;
+}
+.news-listings ul li{
+  margin: 0;
+  padding: 5px 5px;
+  list-style: none;
+  display: inline;
+  float: left;
+  width: 220px;
+  text-align: left;
+
+}
+.news-listings ul li.views-row-colnum-1{
+  padding-left:0;
+}
+.news-listings ul li.views-row-colnum-3{
+  padding-right:0;
+}
+.news-listings ul li .wrapper{
+  background-color: #fff;
+  border: 1px solid #bbbbbb;
+  height: 283px;
+  overflow: hidden;
+  padding: 12px;
+}
+.news-listings .views-field-title{
+  font-size: 14px;
+  color: #000;
+}
+.news-listings .views-field-created{
+  font-size: 11px;
+  color: #aaaaaa;
+  font-style: italic;
+}
+.news-listings .views-field-field-image{
+  padding: 3px 0;
+}
+.news-listings .views-field-nothing{
+  color: #d7a315;
+  font-size: 12px;
+  text-align: right;
+  font-style: italic;
+}
+.news-listings .views-field-nothing a{
+  color: #d7a315;
+}
+.news-listings .status_1 .views-field-field-event-status,
+.news-listings .status_1 .views-field-field-event-time,
+.news-listings .status_1 .views-field-field-event-location,
+.news-listings .status_1 .views-field-nothing a
+{
+  color: #d7a315;
+}
+.news-listings .status_2 .views-field-field-event-status,
+.news-listings .status_2 .views-field-field-event-time,
+.news-listings .status_2 .views-field-field-event-location,
+.news-listings .status_2 .views-field-nothing a
+{
+  color: #aaaaaa;
+}
+.news-listings .views-field-field-event-status-1{
+  display: none;
+  visibility: hidden;
+}
