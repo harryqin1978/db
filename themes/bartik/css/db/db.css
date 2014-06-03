@@ -764,7 +764,7 @@ ul.style-01 li .title{
   background: url('../../images/list-dot-01.png') no-repeat 5px 8px;
 }
 ul.style-01 li .lt-02{
-  background: url('../../images/list-dot-02.png') no-repeat 5px 5px;
+  background: url('../../images/list-dot-01.png') no-repeat 5px 8px;
 }
 #home_block_about {
   overflow:hidden; 
@@ -1322,6 +1322,9 @@ general
 .sidebar .block h2, .content h2, h1#page-title, #content .block h2{
   color:#bc0456;
 }
+.single-image h3 {
+  color: #bc0456;
+}
 #home_featured_pro .attr input.form-submit{
   padding:1px 3px 1px 3px;
 }
@@ -1428,6 +1431,12 @@ border: none;
 
 .cart_row .product-size {
   font-size: 11px;
+}
+
+/* commerce cart */
+
+table.views-table td.price {
+  text-align: right;
 }
 
 /*  home  */

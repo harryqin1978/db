@@ -158,17 +158,14 @@
     <?php endif; ?>
 
     <?php if ($main_menu): ?>
-    <div id="menu_serach">
-      
-
-    
-    <?php
-      /*$block_8 = block_load('block', '8');
-      print block_output($block_8);*/
-    ?>
-
-      
-      
+      <?php
+      /*
+      print '<div id="menu_serach">';
+      $block_8 = block_load('block', '8');
+      print block_output($block_8);
+      print '</div>';
+      */
+      ?>
     <?php endif; ?>
   
 
