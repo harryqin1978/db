@@ -1102,7 +1102,8 @@ body.page-products h1#page-title{
 }
 #home_special {
   position: relative;
-  height: 252px;
+  /* height: 252px; */
+  padding-bottom: 30px;
 }
 #home_special .title {
     height: 18px;

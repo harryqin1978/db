@@ -9,3 +9,11 @@ function fc_custom_init() {
 }
 
 
+/**
+ * Implements hook_commerce_currency_info_alter().
+ */
+function fc_custom_commerce_currency_info_alter(&$currencies, $langcode) {
+    $currencies['CNY']['symbol'] = '￥ ';
+    $currencies['CNY']['symbol_placement'] = 'before';
+    $currencies['CNY']['code_placement'] = 'hidden';
+}
