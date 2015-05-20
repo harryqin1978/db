@@ -34,18 +34,18 @@ jQuery(document).ready(function($) {
     $('.commerce-line-item-actions input').before(html);
   }
 
-  $("#block-block-4 .cart-number").mouseenter(function(e) {
-    $(".region-header #block-commerce-cart-cart").show();
+  $("#block-dc-ajax-add-cart-ajax-shopping-cart-teaser").mouseenter(function(e) {
+    $("#block-dc-ajax-add-cart-ajax-shopping-cart").show();
   }).mouseleave(function(e) {
-    // alert(e.pageX + ' | ' + e.pageY + ' | ' + $(".region-header #block-commerce-cart-cart").offset().left + ' | ' + $(".region-header #block-commerce-cart-cart").offset().top + ' | ' + $(".region-header #block-commerce-cart-cart").width() + ' | ' + $(".region-header #block-commerce-cart-cart").height());
-    var _cart = $(".region-header #block-commerce-cart-cart");
+    // alert(e.pageX + ' | ' + e.pageY + ' | ' + $("#block-dc-ajax-add-cart-ajax-shopping-cart").offset().left + ' | ' + $("#block-dc-ajax-add-cart-ajax-shopping-cart").offset().top + ' | ' + $("#block-dc-ajax-add-cart-ajax-shopping-cart").width() + ' | ' + $("#block-dc-ajax-add-cart-ajax-shopping-cart").height());
+    var _cart = $("#block-dc-ajax-add-cart-ajax-shopping-cart");
     if (e.pageX >= _cart.offset().left && e.pageX <= _cart.offset().left + _cart.width() && e.pageY >= _cart.offset(100).top && e.pageY <= _cart.offset().top + _cart.height()) {
     } else {
       _cart.hide();
     }
   });
 
-  $(".region-header #block-commerce-cart-cart").mouseleave(function(e) {
+  $("#block-dc-ajax-add-cart-ajax-shopping-cart").mouseleave(function(e) {
     $(this).hide();
   });
 

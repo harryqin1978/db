@@ -422,6 +422,28 @@ h1#page-title {
   padding: 0 5px;
 }
 
+.region-header #block-dc-ajax-add-cart-ajax-shopping-cart-teaser {
+  position: absolute;
+  right: 100px;
+  top: 18px;
+}
+
+body.i18n-en .region-header #block-dc-ajax-add-cart-ajax-shopping-cart-teaser {
+  right: 120px;
+}
+
+.region-header #block-dc-ajax-add-cart-ajax-shopping-cart {
+  position: absolute;
+  left: 480px;
+  top: 50px;
+  z-index: 39;
+  background: #fff;
+  padding: 0 10px 10px;
+  border: 1px solid #B18500;
+  color: #333;
+  display: none;
+}
+
 
 
 /* --- latest news block --- */
