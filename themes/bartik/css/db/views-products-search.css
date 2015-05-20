@@ -40,7 +40,7 @@
   padding: 0;
   margin: 0 8px 10px 0;
   width: 218px;
-  height: 221px;
+  height: 226px;
   overflow: hidden;
   text-align: center;
 }
@@ -48,7 +48,7 @@
   margin-right: 0;
 }
 #page_products_search .box{
-  height: 219px;
+  height: 224px;
   
 }
 #page_products_search .box .inner{
@@ -72,7 +72,7 @@
 }
 #page_products_search .attr {
   height: 24px;
-  padding-top: 10px;
+  padding-top: 15px;
 }
 #page_products_search .des {
   font-size: 10px;

@@ -444,7 +444,7 @@ body.logged-in.i18n-en .region-header #block-dc-ajax-add-cart-ajax-shopping-cart
   position: absolute;
   left: 480px;
   top: 50px;
-  z-index: 39;
+  z-index: 199;
   background: #fff;
   padding: 0 10px 10px;
   border: 1px solid #B18500;
@@ -1906,7 +1906,7 @@ input.checkout-back, input.checkout-back:hover {
   display: block;
   position: absolute;
   right: 0;
-  top: -20px;
+  top: -18px;
   width: 120px;
   z-index: 999999;
 }
