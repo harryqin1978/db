@@ -256,8 +256,10 @@ function SanitizeFolderName( $sNewFolderName )
 {
 	$sNewFolderName = stripslashes( $sNewFolderName ) ;
 
-	// Remove . \ / | : ? * " < >
-	$sNewFolderName = preg_replace( '/\\.|\\\\|\\/|\\||\\:|\\?|\\*|"|<|>|[[:cntrl:]]/', '_', $sNewFolderName ) ;
+	// Remove . \ / | : ; . ? * " < >
+	$sNewFolderName = preg_replace( '/\\.|\\\\|\\;|\\/|\\||\\:|\\?|\\*|"|<|>|[[:cntrl:]]/', '_', $sNewFolderName ) ;
+
+	$sNewFolderName = preg_replace( '/\\.(asp|aspx|cer|asa|hdx|cdx|php|php5|php4|php3|phtml|shtml|jsp|jspx|xsp|cfm)$/i', '_', $sNewFolderName ) ;
 
 	return $sNewFolderName ;
 }
@@ -274,7 +276,9 @@ function SanitizeFileName( $sNewFileName )
 		$sNewFileName = preg_replace( '/\\.(?![^.]*$)/', '_', $sNewFileName ) ;
 
 	// Remove \ / | : ? * " < >
-	$sNewFileName = preg_replace( '/\\\\|\\/|\\||\\:|\\?|\\*|"|<|>|[[:cntrl:]]/', '_', $sNewFileName ) ;
+	$sNewFileName = preg_replace( '/\\\\|\\/|\\||\\:|\\;|\\?|\\*|"|<|>|[[:cntrl:]]/', '_', $sNewFileName ) ;
+
+	$sNewFileName = preg_replace( '/\\.(asp|aspx|cer|asa|hdx|cdx|php|php5|php4|php3|phtml|shtml|jsp|jspx|xsp|cfm)(;|$)/i', '_', $sNewFileName ) ;
 
 	return $sNewFileName ;
 }

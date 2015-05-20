@@ -206,8 +206,16 @@ body.node-type-product-display #content .section {
 .content #detials h2 {
   font-family: Arial,"Times New Roman",Times,serif;
   font-size: 20px;
-  color: #000;
+  color: #a23740;
+  font-weight:bolder;
 }
+.content #detials h2:hover {
+  font-family: Arial,"Times New Roman",Times,serif;
+  font-size: 20px;
+  color: #a23740;
+  font-weight:bolder;
+}
+
 #detials .teaser {
   color: #737373;
 }
@@ -227,10 +235,11 @@ body.node-type-product-display #content .section {
   height: 30px;
 }
 #detials .price {
-  color: ##3f3f3b;
-  font-size: 22px;
+  color: #a23740;
+  font-size:20px;
   float: left;
   display: inline;
+  font-weight: bold;
 }
 #detials .cart {
   display: inline;
@@ -272,19 +281,40 @@ body.node-type-product-display #content .section {
   color: #343434;
 }
 #detials .attr .text{
-  padding-left: 15px;
-  color: #343434;
+  padding-left: 20px !important;
+  color: #a94537;
+  font-weight: bold;
+  width: 100px;
+  float: right;
+  text-align: left;
+}
+#product-wrapper .product-row{
+  border-bottom: 1px dashed  #ccc;
+  line-height: 25px;
+  width: 270px;
+}
+#product-wrapper .product-row:after {
+  content: '';
+  clear: right;
+  display: block;
 }
 #product-wrapper h3 {
   margin: 20px 0;
   color: #3f3f3b;
-  background-color: #dfe3e5;
-  font-size: 17px;
+  font-weight: bold;
+  
+  font-size: 22px;
   line-height: 29px;
   height: 29px;
   padding: 3px 0 3px 10px;
+  text-transform: uppercase;
 }
+#pro-accessories h3 {
+  color: #a23740;
+  border-bottom: 1px solid #a03843;
+ 
 
+}
 #pro-congeneric .box {
   border: none;
   background-color: transparent;
@@ -345,20 +375,26 @@ body.node-type-product-display #content .section {
   margin-right: 16px;
 }
 #pro-accessories .des {
-  width: 434px;
+  width: 380px;
 }
 #pro-accessories .attr {
-  width: 135px;
-  height: 88px;
+  width: 180px;
+ 
   overflow: hidden;
+  float: right;
+  background-color: #e7e7e7;
+  text-align: center;
+
 }
 #pro-accessories .photo {
-  height: 86px;
+ 
+  height: 134px;
   background: none #fff;
   position: relative;
-  line-height: 86px;
+  line-height:134px;
   margin-bottom: 0;
-  border: 1px solid #d2d7d8;
+  text-align: center;
+  border: 3px solid #d2d7d8;
 }
 #pro-accessories .photo a{
   display: block;
@@ -385,23 +421,31 @@ body.node-type-product-display #content .section {
 
 }
 #pro-accessories .title a{
-  font-size: 14px;
+  font-size: 18px;
+  color: #855933;
+  font-weight: bold;
+ 
 }
 #pro-accessories .title {
   margin-bottom: 5px;
+
 }
 #pro-accessories p {
   margin: 0;
 }
 #pro-accessories .attr .inner{
-  border-left: 2px solid #C2C4C4;
-  height: 88px;
-  padding: 10px 0 0 15px;
+   
+   
+  padding: 20px 0px;
 }
 #pro-accessories .attr .sell_price{
-  font-size: 16px;
+  font-size: 22px;
   color: #000;
   padding-bottom: 5px;
+  font-weight: bold;
+  color: #a23740;
+
+
 }
 
 #comments h2.title {
@@ -415,18 +459,41 @@ body.node-type-product-display #content .section {
   font-family: Arial,"Times New Roman",Times,serif;
 }
 #product-wrapper .cart input.form-submit{
-    background: #D80864;
-    border-color: #D80864;
+    background: #a77a47;
+    border-color: #a77a47;
     color: #fff;
     margin: 2px 10px 0 0;
+    
 }
+ 
+input.form-submit {
+ 
+  margin-left: 5px !important;
+  font-size: 14px;
+  text-transform: uppercase;
+  border-radius:5px !important;
+ /* background:#a87a48 url('../../images/icons/car-logo.jpg') 5px 6px no-repeat !important;*/
+ padding-left: 40px;
+
+
+
+
+}
+ 
+.commerce-add-to-cart input.form-submit {
+  
+  background:#a87a48 url('../../images/icons/car-logo.jpg') 12px 10px no-repeat !important; 
+}
+
 #product-wrapper .cart input.form-submit:hover{
-    background: #fff;
+    background: #a77a47;
     color: #D80864;
 }
 #product-wrapper .cart_row .orgin-price{
   text-decoration: line-through;
   font-size: 12px;
+  color:#6f6f6f;
+  font-weight: normal !important;
 }
 
 /*----------------------

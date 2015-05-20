@@ -1663,3 +1663,21 @@ div.admin-panel .description {
 #footer-wrapper .photo {
   display: none;
 }
+
+/*--28 OCT --*/
+html body #page-wrapper{
+  background-color:#f7f7f7;
+}
+
+html #page-wrapper #page{
+  background-color:none;
+  background:none;
+}
+
+#header #logo, #logo-area a{
+  margin-top:0;
+}
+
+#main-wrapper #main .tabs{
+  margin-bottom:0;
+}

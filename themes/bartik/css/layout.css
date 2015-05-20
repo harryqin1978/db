@@ -98,3 +98,8 @@ body,
   width: 940px;
   min-width: 920px;
 }
+
+/*--Ying-modification 24OCT--*/
+body #page #header-addon {
+  background-color: #ae1a39;
+}

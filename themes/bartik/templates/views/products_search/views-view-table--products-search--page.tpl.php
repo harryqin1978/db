@@ -6,9 +6,6 @@
  *
  * @ingroup views_templates
  */
-drupal_add_css(path_to_theme() . '/css/db/views-products-search.css', array('group' => CSS_THEME));
-
-drupal_add_js(path_to_theme() . '/js/db/views-products-search.js', array('group' => JS_THEME));
 
 ?>
 

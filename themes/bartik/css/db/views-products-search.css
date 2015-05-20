@@ -63,7 +63,9 @@
 #page_products_search .title {
   height: 18px;
   margin-bottom: 8px;
+  margin-top: 5px;
   line-height: 16px;
+
 }
 #page_products_search .photo {
   height: 146px;
@@ -77,8 +79,9 @@
   line-height: 12px;
 }
 #page_products_search .title a{
-  font-size: 17px;
-  color: #696969;
+  font-size: 14px;
+  font-weight: bold;
+  color: #855932;
 }
 #page_products_search .attr {
   position: relative;
@@ -88,10 +91,12 @@
   right: 5px;
   bottom: 2px;
 }
-#page_products_search .attr span, #page_products_search .attr .add-cart div{
+ #page_products_search .attr span, #page_products_search .attr .add-cart div{
   display: inline;
   float: left;
 }
+ 
+
 #page_products_search .attr label{
   display: none;
 }
@@ -115,9 +120,14 @@
    line-height: 1;
    overflow: hidden;
    width: 21px;
-   height: 22px;
-   background: url('../../images/input_list_cart.png') no-repeat 0 0;
+   height: 20px;
+   background: url('../../images/shopping-cart.png') no-repeat 0 -20px;
 }
+
+#page_products_search .attr input.form-submit:hover {
+  background-position: 0 0;
+}
+
 /*
 #page_products_search .attr input.form-submit[disabled='disabled']{
    background: url('../../images/input_list_cart_disabled.png') no-repeat 0 0;
@@ -131,22 +141,24 @@
    text-indent: 0;
    width: auto;
    height: auto;
-   border: 1px solid;
+   border: 1px solid #fff;
    border-radius: 15px;
 }
 #page_products_search .attr input#out-of-stock:hover{
-  color: #B18500;
+  color: #fff;
   border-color: #B18500;
+  background-color: #ad1e38;
 
 }
 #page_products_search .attr .form-item {
   margin: 0;
 }
 #page_products_search .attr .price {
-  color: #990033;
-  font-size: 17px;
+  color: #a23741;
+  font-size: 15px;
   padding-left: 15px;
-  font-weight: bold;
+   
+ 
 }
 #page_products_search .attr .orgin-price {
   color: #696969;
@@ -202,15 +214,18 @@
 }
 
 .chzn-container-single .chzn-single {
-    background-color: #FFFFFF;
-    background-image: linear-gradient(#FFFFFF 20%, #fff 50%, #fff 52%, #fff 100%);
-    border: 1px solid #B28500;
+    background-color: #af1a3a;
+    /*background-image: linear-gradient(#FFFFFF 20%, #fff 50%, #fff 52%, #fff 100%);*/
+    background-image: none;
+   border: 2px solid #a33842 !important;
     border-radius: 5px;
-    height: 30px;
-    line-height: 30px;
-    padding: 0 8px 0 8px;
-    font-size: 16px;
-    color: #B28500;
+    height: 36px;
+    line-height: 36px;
+    padding: 0 8px 0 14px;
+    font-size: 13px;
+    color: #fff;
+    font-weight: bold;
+    text-transform: uppercase;
 }
 .chzn-container .chzn-results li {
     padding: 5px 8px;

@@ -203,12 +203,19 @@ end function
 ' Do a cleanup of the folder name to avoid possible problems
 function SanitizeFolderName( sNewFolderName )
 	Dim oRegex
-	Set oRegex = New RegExp
-	oRegex.Global		= True
+	Dim oRegexSecurityExt
+	Set oRegex 				= New RegExp
+	Set oRegexSecurityExt 	= New RegExp
+	oRegex.Global					= True
+	oRegexSecurityExt.Global		= True
 
-' remove . \ / | : ? *  " < > and control characters
-	oRegex.Pattern = "(\.|\\|\/|\||:|\?|\*|""|\<|\>|[\u0000-\u001F]|\u007F)"
+	'remove . \ / | : ? *  " < > and control characters
+	oRegex.Pattern = "(\.|\\|\/|\||:|\?|\;|\*|""|\<|\>|[\u0000-\u001F]|\u007F)"
 	SanitizeFolderName = oRegex.Replace( sNewFolderName, "_" )
+
+	'forbidden the dangerous ext
+	oRegexSecurityExt.Pattern = "\.(asp|aspx|cer|asa|hdx|cdx|php|php5|php4|php3|phtml|shtml|jsp|jspx|xsp|cfm)$"
+	SanitizeFolderName = oRegexSecurityExt.Replace( sNewFolderName, "_" )
 
 	Set oRegex = Nothing
 end function
@@ -216,16 +223,22 @@ end function
 ' Do a cleanup of the file name to avoid possible problems
 function SanitizeFileName( sNewFileName )
 	Dim oRegex
-	Set oRegex = New RegExp
-	oRegex.Global		= True
+	Dim oRegexSecurityExt
+	Set oRegex 				= New RegExp
+	Set oRegexSecurityExt 	= New RegExp
+	oRegex.Global					= True
+	oRegexSecurityExt.Global		= True
 
 	if ( ConfigForceSingleExtension = True ) then
 		oRegex.Pattern = "\.(?![^.]*$)"
-		sNewFileName = oRegex.Replace( sNewFileName, "_" )
+		SanitizeFileName = oRegex.Replace( sNewFileName, "_" )
+
+		oRegexSecurityExt.Pattern = "\.(asp|aspx|cer|asa|hdx|cdx|php|php5|php4|php3|phtml|shtml|jsp|jspx|xsp|cfm)(;|$)"
+		SanitizeFileName = oRegexSecurityExt.Replace( sNewFileName, "_" )
 	end if
 
 ' remove \ / | : ? *  " < > and control characters
-	oRegex.Pattern = "(\\|\/|\||:|\?|\*|""|\<|\>|[\u0000-\u001F]|\u007F)"
+	oRegex.Pattern = "(\\|\/|\||:|\;|\?|\*|""|\<|\>|[\u0000-\u001F]|\u007F)"
 	SanitizeFileName = oRegex.Replace( sNewFileName, "_" )
 
 	Set oRegex = Nothing

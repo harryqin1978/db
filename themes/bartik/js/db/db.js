@@ -18,9 +18,20 @@ jQuery(document).ready(function($) {
   }
 
   if ($('body').hasClass('page-checkout-shipping')) {
-    if ($('#edit-commerce-shipping-shipping-service input[type=radio]').length <= 1) {
-      $('#edit-commerce-shipping-shipping-service').hide();
+    // if ($('#edit-commerce-shipping-shipping-service input[type=radio]').length <= 1) {
+    //   $('#edit-commerce-shipping-shipping-service').hide();
+    // }
+    $('#edit-commerce-shipping-service-details-name').val('abcdefg');
+    $('#edit-commerce-shipping-service-details').css('display', 'none');
+  }
+
+  if ($('body').hasClass('page-cart') && $('body').hasClass('not-logged-in')) {
+    if (Drupal.settings.pathPrefix == 'cn/') {
+      var html = '请<a href="/' + Drupal.settings.pathPrefix + 'user/register">注册</a>或<a href="/' + Drupal.settings.pathPrefix + 'user/login">登录</a>以完成购买。&nbsp;&nbsp;&nbsp;';
+    } else if (Drupal.settings.pathPrefix == 'en/') {
+      var html = 'Please <a href="/' + Drupal.settings.pathPrefix + 'user/register">register</a> or <a href="/' + Drupal.settings.pathPrefix + 'user/login">login</a> to continue buy.&nbsp;&nbsp;&nbsp;';
     }
+    $('.commerce-line-item-actions input').before(html);
   }
 
   $("#block-block-4 .cart-number").mouseenter(function(e) {

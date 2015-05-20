@@ -46,6 +46,11 @@ function bartik_process_page(&$variables) {
   drupal_add_js(drupal_get_path('theme', 'bartik') . '/js/db/jquery.form.min.js');
   drupal_add_js(drupal_get_path('theme', 'bartik') . '/js/db/db.js');
 
+  if (arg(0) == 'products' && !arg(1)) {
+    drupal_add_css(path_to_theme() . '/css/db/views-products-search.css', array('group' => CSS_THEME));
+    drupal_add_js(path_to_theme() . '/js/db/views-products-search.js', array('group' => JS_THEME));
+  }
+
   // Hook into color.module.
   if (module_exists('color')) {
     _color_page_alter($variables);

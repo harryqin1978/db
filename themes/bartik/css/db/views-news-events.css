@@ -26,14 +26,22 @@
   padding: 12px;
 }
 .news-listings .views-field-title{
-  font-size: 14px;
-  color: #000;
+  font-size: 15px;
+  font-weight: bold;
+}
+.news-listings .views-field-title a{
+ color: #8c562a;  
+ text-transform: capitalize;
 }
 .news-listings .views-field-created{
   font-size: 11px;
-  color: #aaaaaa;
-  font-style: italic;
-}
+  color: #666666;
+ }
+ .news-listings .views-field-created span{
+  padding-left: 20px;
+  background: url(../../images/calendar.jpg) left center no-repeat;
+ 
+ }
 .news-listings .views-field-field-image{
   padding: 3px 0;
 }
@@ -41,17 +49,34 @@
   color: #d7a315;
   font-size: 12px;
   text-align: right;
-  font-style: italic;
+   
 }
 .news-listings .views-field-nothing a{
-  color: #d7a315;
+  color: #fff;
+  padding: 6px 6px;
+  border-radius: 5px;
+  background-color: #ae1b38;
+  position: absolute;
+  bottom: 8px;
+  right: 10px;
+
+}
+.news-listings .views-field-nothing a:hover{
+  color: #fff;
+  padding: 6px 6px;
+  border-radius: 5px;
+  background-color: #ae1b38;
+  text-decoration: none;
+  cursor: pointer;
+  background-color: #353535;
+
 }
 .news-listings .status_1 .views-field-field-event-status,
 .news-listings .status_1 .views-field-field-event-time,
 .news-listings .status_1 .views-field-field-event-location,
 .news-listings .status_1 .views-field-nothing a
 {
-  color: #d7a315;
+  color: #fff;
 }
 .news-listings .status_2 .views-field-field-event-status,
 .news-listings .status_2 .views-field-field-event-time,
@@ -63,4 +88,8 @@
 .news-listings .views-field-field-event-status-1{
   display: none;
   visibility: hidden;
+}
+
+#block-system-main ul li .wrapper{
+  position: relative;
 }

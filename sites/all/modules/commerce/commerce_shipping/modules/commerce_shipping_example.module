@@ -28,7 +28,7 @@ function commerce_shipping_example_commerce_shipping_service_info() {
 
   $shipping_services['example_shipping_service'] = array(
     'title' => t('Example shipping service'),
-    'description' => t('A $20 flat rate service with express delivery available for an additional $15.'),
+    'description' => t('A flat rate service with express delivery available.'),
     'display_title' => t('Shipping'),
     'shipping_method' => 'example_shipping_method',
     'price_component' => 'shipping',
@@ -48,9 +48,10 @@ function commerce_shipping_example_commerce_shipping_service_info() {
  * calculated for the given order.
  */
 function commerce_shipping_example_service_rate($shipping_service, $order) {
+  $order_wrapper = entity_metadata_wrapper('commerce_order', $order);
   return array(
-    'amount' => 0,
-    'currency_code' => 'USD',
+    'amount' => 3000,
+    'currency_code' => $order_wrapper->commerce_order_total->currency_code->value(),
     'data' => array(),
   );
 }
@@ -61,35 +62,11 @@ function commerce_shipping_example_service_rate($shipping_service, $order) {
 function commerce_shipping_example_service_details_form($pane_form, $pane_values, $checkout_pane, $order, $shipping_service) {
   $form = array();
 
-  $commerce_customer_shipping = field_get_items('commerce_order', $order, 'commerce_customer_shipping');
-  if ($commerce_customer_shipping) {
-    $profile_id = $commerce_customer_shipping[0]['profile_id'];
-    $profile = commerce_customer_profile_load($profile_id);
-    if ($profile) {
-      $field_address = field_get_items('commerce_customer_profile', $profile, 'commerce_customer_address');
-      if ($field_address) {
-        $country = $field_address[0]['country'];
-        $region = $field_address[0]['administrative_area'];
-        //print $field_address[0]['country'];
-        //print $field_address[0]['administrative_area'];
-      }
-    }
-  }
-
-  if ($country) {
-    $_SESSION['commerce_shipping_example_country'] = $country;
-    $_SESSION['commerce_shipping_example_region'] = $region;
-  } else {
-    unset($_SESSION['commerce_shipping_example_country']);
-    unset($_SESSION['commerce_shipping_example_region']);
-  }
-
   $pane_values['service_details'] += array(
-    // 'name' => '',
-    'shipping_company' => '',
+    'name' => '',
+    'express' => '',
   );
 
-  /*
   $form['name'] = array(
     '#type' => 'textfield',
     '#title' => t('Name'),
@@ -97,60 +74,21 @@ function commerce_shipping_example_service_details_form($pane_form, $pane_values
     '#default_value' => $pane_values['service_details']['name'],
     '#required' => TRUE,
   );
-  */
 
-  if ($country) {
-
-    $nids = array();
-    $result = db_query("SELECT fc.entity_id FROM {field_data_field_spr_countries} fc, {field_data_field_spr_region} fc_r,{node} n WHERE n.nid = fc.entity_id AND fc.entity_id = fc_r.entity_id AND n.status = 1 AND fc.entity_type = 'node' AND fc.bundle = 'shipping_price_rule' AND INSTR(CONCAT(',', fc.field_spr_countries_value, ','), '," . $country . ",') AND INSTR(CONCAT(',', fc_r.field_spr_region_value, ','), '," . $region . ",')");
-    foreach ($result as $record) {
-      $nids[] = $record->entity_id;
-    }
-
-    $shipping_companies = commerce_shipping_example_get_shipping_companies();
-
-    $options = array();
-    $company_tid_first = 0;
-    foreach ($nids as $nid) {
-      $company_tid = db_query("SELECT field_spr_company_tid FROM {field_data_field_spr_company} WHERE entity_type = 'node' AND bundle = 'shipping_price_rule' AND entity_id = :nid", array(':nid' => $nid))->fetchField();
-      // dpm($shipping_companies[$company_tid]);
-      $price_amount = db_query("SELECT field_spr_price_amount FROM {field_data_field_spr_price} WHERE entity_type = 'node' AND bundle = 'shipping_price_rule' AND entity_id = :nid", array(':nid' => $nid))->fetchField();
-      $price_currency_code = db_query("SELECT field_spr_price_currency_code FROM {field_data_field_spr_price} WHERE entity_type = 'node' AND bundle = 'shipping_price_rule' AND entity_id = :nid", array(':nid' => $nid))->fetchField();
-      if (!$company_tid_first) {
-        $company_tid_first = $company_tid;
-      }
-      $options[$company_tid] = $shipping_companies[$company_tid] . ': ' . commerce_currency_format($price_amount, $price_currency_code);
-    }
-
-    $form['shipping_company'] = array(
-      '#type' => 'radios',
-      '#title' => t('Shipping company'),
-      '#required' => TRUE,
-      // '#description' => t('Express delivery (costs an additional $15)'),
-      '#default_value' => $pane_values['service_details']['shipping_company'] ? $pane_values['service_details']['shipping_company'] : $company_tid_first,
-      '#options' => $options,
-    );
-
-  }
+  $form['express'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Express delivery'),
+    '#description' => t('Express delivery is really fast and you need to pay extra for this service.'),
+    '#default_value' => $pane_values['service_details']['express'],
+  );
 
   return $form;
-}
-
-function commerce_shipping_example_get_shipping_companies() {
-  $vid = db_query("SELECT vid FROM {taxonomy_vocabulary} WHERE machine_name = 'shipping_company'")->fetchField();
-  $terms = taxonomy_get_tree($vid);
-  $return = array();
-  foreach ($terms as $term_index => $term_record) {
-    $return[$term_record->tid] = $term_record->name;
-  }
-  return $return;
 }
 
 /**
  * Shipping service callback: validates the example shipping service details.
  */
 function commerce_shipping_example_service_details_form_validate($details_form, $details_values, $shipping_service, $order, $form_parents) {
-  /*
   if (strlen($details_values['name']) < 2) {
     form_set_error(implode('][', array_merge($form_parents, array('name'))), t('You must enter a name two or more characters long.'));
 
@@ -159,7 +97,6 @@ function commerce_shipping_example_service_details_form_validate($details_form, 
     // combined validation / submission going on per-pane in the checkout form.
     return FALSE;
   }
-  */
 }
 
 /**
@@ -167,63 +104,27 @@ function commerce_shipping_example_service_details_form_validate($details_form, 
  * express delivery was selected.
  */
 function commerce_shipping_example_service_details_form_submit($details_form, $details_values, $line_item) {
-  if ($details_values['shipping_company']) {
+  if ($details_values['express']) {
     $line_item_wrapper = entity_metadata_wrapper('commerce_line_item', $line_item);
-
-    // default shipping price.
-    $shipping_price = 0;
-    $shipping_currency_code = 'USD';
-
-    $country = isset($_SESSION['commerce_shipping_example_country']) ? $_SESSION['commerce_shipping_example_country'] : '';
-    $region = isset($_SESSION['commerce_shipping_example_region']) ? $_SESSION['commerce_shipping_example_region'] : '';
-
-    if ($country) {
-      $nids = array();
-      $result = db_query("SELECT fc.entity_id FROM {field_data_field_spr_countries} fc, {field_data_field_spr_region} fc_r,{node} n WHERE n.nid = fc.entity_id AND fc.entity_id = fc_r.entity_id AND n.status = 1 AND fc.entity_type = 'node' AND fc.bundle = 'shipping_price_rule' AND INSTR(CONCAT(',', fc.field_spr_countries_value, ','), '," . $country . ",') AND INSTR(CONCAT(',', fc_r.field_spr_region_value, ','), '," . $region . ",')");
-      foreach ($result as $record) {
-        $nids[] = $record->entity_id;
-      }
-      foreach ($nids as $nid) {
-        $company_tid = db_query("SELECT field_spr_company_tid FROM {field_data_field_spr_company} WHERE entity_type = 'node' AND bundle = 'shipping_price_rule' AND entity_id = :nid", array(':nid' => $nid))->fetchField();
-        if ($company_tid == $details_values['shipping_company']) {
-          $shipping_price = db_query("SELECT field_spr_price_amount FROM {field_data_field_spr_price} WHERE entity_type = 'node' AND bundle = 'shipping_price_rule' AND entity_id = :nid", array(':nid' => $nid))->fetchField();
-          $shipping_currency_code = db_query("SELECT field_spr_price_currency_code FROM {field_data_field_spr_price} WHERE entity_type = 'node' AND bundle = 'shipping_price_rule' AND entity_id = :nid", array(':nid' => $nid))->fetchField();
-        }
-      }
-    }
-
-    /* some test */
-    /*
-    if ($country == 'CN' && $details_values['shipping_company'] == 'tnt') {
-      $shipping_price = 2000;
-    } elseif ($country == 'CN' && $details_values['shipping_company'] == 'express') {
-      $shipping_price = 2500;
-    } elseif ($country == 'BR' && $details_values['shipping_company'] == 'tnt') {
-      $shipping_price = 3000;
-    } elseif ($country == 'BR' && $details_values['shipping_company'] == 'express') {
-      $shipping_price = 3500;
-    }
-    */
 
     // Build a price array for the express delivery fee.
     $express_price = array(
-      'amount' => $shipping_price,
-      'currency_code' => $shipping_currency_code,
+      'amount' => 1500,
+      'currency_code' => $line_item_wrapper->commerce_unit_price->currency_code->value(),
       'data' => array(),
     );
 
     // Add the express upcharge to the line item unit price.
-    $line_item_wrapper->commerce_unit_price->amount = $line_item_wrapper->commerce_unit_price->amount->value() + $shipping_price;
+    $line_item_wrapper->commerce_unit_price->amount = $line_item_wrapper->commerce_unit_price->amount->value() + 1500;
 
     // Add the express delivery fee component to the unit price.
     $line_item_wrapper->commerce_unit_price->data = commerce_price_component_add(
       $line_item_wrapper->commerce_unit_price->value(),
-      'example_shipping_service_' . $details_values['shipping_company'],
+      'example_shipping_service_express',
       $express_price,
       TRUE,
       FALSE
     );
-    $line_item_wrapper->commerce_unit_price->data = commerce_price_component_delete($line_item_wrapper->commerce_unit_price->value(), 'shipping');
   }
 }
 
@@ -231,17 +132,10 @@ function commerce_shipping_example_service_details_form_submit($details_form, $d
  * Implements hook_commerce_price_component_type_info().
  */
 function commerce_shipping_example_commerce_price_component_type_info() {
-
-  $companies = commerce_shipping_example_get_shipping_companies();
-
-  $return = array();
-
-  foreach ($companies as $key => $company) {
-    $return['example_shipping_service_' . $key] = array(
-      'title' => check_plain($company) . t(' shipping'),
+  return array(
+    'example_shipping_service_express' => array(
+      'title' => t('Express delivery'),
       'weight' => 20,
-    );
-  }
-
-  return $return;
+    ),
+  );
 }
