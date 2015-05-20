@@ -432,6 +432,14 @@ body.i18n-en .region-header #block-dc-ajax-add-cart-ajax-shopping-cart-teaser {
   right: 120px;
 }
 
+body.logged-in .region-header #block-dc-ajax-add-cart-ajax-shopping-cart-teaser {
+  right: 165px;
+}
+
+body.logged-in.i18n-en .region-header #block-dc-ajax-add-cart-ajax-shopping-cart-teaser {
+  right: 205px;
+}
+
 .region-header #block-dc-ajax-add-cart-ajax-shopping-cart {
   position: absolute;
   left: 480px;
@@ -1890,7 +1898,16 @@ input.checkout-back, input.checkout-back:hover {
  
  
 
+.add-cart form div {
+  position: relative;
+}
 
- 
-
+.add-cart form div .ajax-progress {
+  display: block;
+  position: absolute;
+  right: 0;
+  top: -20px;
+  width: 120px;
+  z-index: 999999;
+}
 
