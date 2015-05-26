@@ -6,6 +6,16 @@ jQuery(document).ready(function($) {
     DD_belatedPNG.fix('#footer-wrapper');
   }
 
+  $('.view-home-block-featured .featured-items').each(function(index, el) {
+    var _title = $(el).find('.title a').text();
+    $(el).find('.href_layer a').attr('title', _title);
+  });
+
+  $('.view-products-search #page_products_search > ul > li').each(function(index, el) {
+    var _title = $(el).find('.title a').text();
+    $(el).find('.href_layer a').attr('title', _title);
+  });
+
   if ($('body').hasClass('page-cart')) {
     $('#views-form-commerce-cart-form-default td.views-field-nothing').each(function(){
       var op = parseFloat($(this).parent().find('td.views-field-field-product-origin-price').html().replace('$', ''));
