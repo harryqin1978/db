@@ -452,6 +452,10 @@ body.logged-in.i18n-en .region-header #block-dc-ajax-add-cart-ajax-shopping-cart
   display: none;
 }
 
+.region-header #block-dc-ajax-add-cart-ajax-shopping-cart .ajax-shopping-cart-checkout a {
+  background-color: #990033;
+  padding: 5px;
+}
 
 
 /* --- latest news block --- */
