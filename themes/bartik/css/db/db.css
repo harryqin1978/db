@@ -1915,3 +1915,8 @@ input.checkout-back, input.checkout-back:hover {
   z-index: 999999;
 }
 
+
+
+body.page-checkout .button-operator {
+  display: none;
+}
