@@ -1920,3 +1920,7 @@ input.checkout-back, input.checkout-back:hover {
 body.page-checkout .button-operator {
   display: none;
 }
+
+body.page-checkout .checkout-buttons .checkout-continue {
+  float: right;
+}
