@@ -1652,6 +1652,7 @@ div.admin-panel .description {
 /* fixes */
 .single-image {
   float: left;
+  width: 188px;
 }
 
 .single-image h3 {
