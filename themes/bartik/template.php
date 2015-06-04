@@ -198,7 +198,7 @@ function bartik_field__taxonomy_term_reference($variables) {
 
 function bartik_preprocess_views_exposed_form(&$vars) {
   
-  $filter_field_names = array('filter-field_pd_category_tid', 'filter-field_pd_color_tid', 'filter-field_pd_country_tid', 'filter-field_pd_taste_tid');
+  $filter_field_names = array('filter-field_pd_category_tid', 'filter-field_pd_color_tid', 'filter-field_pd_country_tid', 'filter-field_pd_taste_tid', 'filter-field_pd_price_range');
 
   foreach ($filter_field_names as $filter_field_name) {
     if (isset($vars['widgets'][$filter_field_name])) {
