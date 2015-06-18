@@ -4,7 +4,7 @@
   <div id="home-first-content">
     <div class="col col-center">
       <?php
-      $nid = db_query("SELECT nid FROM {node} WHERE status = 1 AND type = 'hmi' AND language = :$language LIMIT 0, 1", array(':$language' => $$language->$language))->fetchField();
+      $nid = db_query("SELECT nid FROM {node} WHERE status = 1 AND type = 'hmi' AND language = :language LIMIT 0, 1", array(':$language' => $language->language))->fetchField();
       if ($nid) {
         $node = node_load($nid);
         $field_hmi_image = field_get_items('node', $node, 'field_hmi_image');
