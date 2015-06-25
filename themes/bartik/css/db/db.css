@@ -110,7 +110,7 @@ body.i18n-en #header {
   margin-top: 7px;
 }
 
-.region-header .block-nice-menus ul.nice-menu li.menuparent > ul {
+.region-header .block-nice-menus ul.nice-menu > li.menuparent > ul {
   border-top: none;
   margin-top: 15px;
 }
