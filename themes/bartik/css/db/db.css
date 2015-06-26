@@ -1661,6 +1661,8 @@ body.front #block-block-12 {
 body.front #content h2 {
   font-size: 22px;
   font-weight: bold;
+  color: #ad1c3b;
+  line-height: 1.2;
 }
 
 #header #sidebar-first div.section {
