@@ -1658,6 +1658,11 @@ body.front #block-block-12 {
   /* display: none; */
 }
 
+body.front #content h2 {
+  font-size: 22px;
+  font-weight: bold;
+}
+
 #header #sidebar-first div.section {
   width: auto;
 }
