@@ -192,34 +192,6 @@ function bartik_field__taxonomy_term_reference($variables) {
   return $output;
 }
 
-
-
-/* resolve views taxonomy term name expose not i18n translate problem */
-
-function bartik_preprocess_views_exposed_form(&$vars) {
-  
-  $filter_field_names = array('filter-field_pd_category_tid', 'filter-field_pd_color_tid', 'filter-field_pd_country_tid', 'filter-field_pd_taste_tid');
-  // $filter_field_names = array('filter-field_pd_category_tid', 'filter-field_pd_color_tid', 'filter-field_pd_country_tid', 'filter-field_pd_taste_tid', 'filter-field_pd_price_range_tid');
-
-  foreach ($filter_field_names as $filter_field_name) {
-    if (isset($vars['widgets'][$filter_field_name])) {
-      $_html = $vars['widgets'][$filter_field_name]->widget;
-      preg_match_all('/<option.*?value="(.*?)".*?>([^<>]*?)<\/option>/u', $_html, $_matches);
-      foreach ($_matches[0] as $_key => $_value) {
-        if($_key){
-          $_trans = i18n_string(array('taxonomy', 'term', (int) $_matches[1][$_key], 'name'), $_matches[2][$_key]);
-          // $_trans = str_replace('-', '', $_trans);
-          // drupal_set_message($_trans);
-          $_html = preg_replace('/(<option.*?value="'.$_matches[1][$_key].'".*?>)'.$_matches[2][$_key].'(<\/option>)/u', '$1'.$_trans.'$2', $_html);
-          $vars['widgets'][$filter_field_name]->widget = $_html;
-        }
-      }
-    }
-  }
-
-}
-
-
 function block_output(&$vars){
  return drupal_render(_block_get_renderable_array(_block_render_blocks(array($vars))));
 }

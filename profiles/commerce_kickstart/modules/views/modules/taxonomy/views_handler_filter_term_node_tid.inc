@@ -128,7 +128,7 @@ class views_handler_filter_term_node_tid extends views_handler_filter_many_to_on
         if ($tree) {
           foreach ($tree as $term) {
             $choice = new stdClass();
-            $choice->option = array($term->tid => str_repeat('-', $term->depth) . $term->name);
+            $choice->option = array($term->tid => str_repeat('-', $term->depth) . i18n_string(array('taxonomy', 'term', $term->tid, 'name'), $term->name));
             $options[] = $choice;
           }
         }
@@ -148,7 +148,7 @@ class views_handler_filter_term_node_tid extends views_handler_filter_many_to_on
         }
         $result = $query->execute();
         foreach ($result as $term) {
-          $options[$term->tid] = $term->name;
+          $options[$term->tid] = i18n_string(array('taxonomy', 'term', $term->tid, 'name'), $term->name);
         }
       }
 

@@ -28,5 +28,8 @@ class views_handler_filter_field_list extends views_handler_filter_many_to_one {
   function get_value_options() {
     $field = field_info_field($this->definition['field_name']);
     $this->value_options = list_allowed_values($field);
+    foreach ($this->value_options as $key => $value) {
+      $this->value_options[$key] = i18n_string(array('field', $this->definition['field_name'], '#allowed_values', $key), $value);
+    }
   }
 }

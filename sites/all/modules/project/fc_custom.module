@@ -17,3 +17,13 @@ function fc_custom_commerce_currency_info_alter(&$currencies, $langcode) {
     $currencies['CNY']['symbol_placement'] = 'before';
     $currencies['CNY']['code_placement'] = 'hidden';
 }
+
+/**
+ * Implements hook_form_alter().
+ */
+function fc_custom_form_alter(&$form, &$form_state, $form_id) {
+  global $language;
+
+  if ($form_id == 'views_exposed_form') {
+  }
+}
