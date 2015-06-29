@@ -263,10 +263,12 @@
   border-color: -moz-use-text-color #B28500 #B28500;
 }
 
-#views-exposed-form-products-search-page select.form-select {
-  min-width: 110px;
-  width:auto !important;
-  width: 110px;
+.chzn-container {
+  width: 100px !important;
+}
+
+.chzn-container-single .chzn-single span {
+  width: 80px;
 }
 
 .views-widget-filter-title input {
@@ -278,5 +280,9 @@
 
 #main-wrapper .views-exposed-widget input.form-submit {
   margin-right: 0;
+}
+
+.views-exposed-form #edit-title {
+  width: 140px;
 }
 /* --- reset for new designer ---  end */
