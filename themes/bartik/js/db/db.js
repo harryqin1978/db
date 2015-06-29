@@ -25,6 +25,13 @@ jQuery(document).ready(function($) {
         $(this).html(per + '%');
       }
     });
+
+    $('#edit-checkout').click(function(event) {
+      $('.view-commerce-cart-form form').attr('target', '_blank');
+    });
+    $('#edit-submit, .views-field-edit-delete .delete-line-item').click(function(event) {
+      $('.view-commerce-cart-form form').attr('target', '_self');
+    });
   }
 
   if ($('body').hasClass('page-checkout-shipping')) {
