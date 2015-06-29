@@ -122,11 +122,12 @@ function addressfield_format_address_generate(&$format, $address, $context = arr
       'Guangdong' => t('Guangdong'),
       'Xizhang' => t('Xizhang'),
       'Hainan' => t('Hainan'),
-      'Guganxi' => t('Guganxi'),
+      'Guangxi' => t('Guangxi'),
       'Sichuan' => t('Sichuan'),
       'Hebei' => t('Hebei'),
       'Guizhou' => t('Guizhou'),
       'Shanxi' => t('Shanxi'),
+      'Shaanxi' => t('Shaanxi'),
       'Yunnan' => t('Yunnan'),
       'Liaonin' => t('Liaonin'),
       'Jilin' => t('Jilin'),
@@ -135,7 +136,8 @@ function addressfield_format_address_generate(&$format, $address, $context = arr
       'Qinhai' => t('Qinhai'),
       'Jiangshu' => t('Jiangshu'),
       'Hongkong' => t('Hongkong'),
-      'Aomen' => t('Aomen')
+      'Macao' => t('Macao'),
+      'Taiwan' => t('Taiwan'),
     );
   }
   $format['street_block']['thoroughfare']['#title'] = t('Address 1 <span class="subtitle">(Street address incl. number, P.O. box)</span>');
