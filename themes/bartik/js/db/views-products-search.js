@@ -28,6 +28,10 @@ jQuery(document).ready(function($) {
 
   $(".views-exposed-widgets select[id*='edit-']").chosen({disable_search_threshold: 10});
 
+  $(".views-exposed-widgets select[id*='edit-']").change(function(event) {
+    $('#edit-submit-products-search').click();
+  });
+
   $("ul.chzn-results [id*='_0']").css("display", "none");
 
   $("input#edit-title").attr('placeholder', Drupal.t('Keyword search'));
