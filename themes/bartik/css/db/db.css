@@ -830,7 +830,7 @@ div.more span:hover > a{
     line-height: 1.2;
 }
 .sidebar .block h2:hover, .content h2:hover, h1#page-title:hover, #content .block h2:hover  {
-  color: #d80864;
+  /*color: #d80864;*/
 }
 .region-header #block-menu-menu-header-top li.first {
     border-left: 1px solid #FFFFFF;

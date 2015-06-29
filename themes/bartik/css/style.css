@@ -1454,8 +1454,7 @@ div.vertical-tabs .vertical-tabs-panes fieldset.vertical-tabs-pane {
   margin-right: 5px;
   width: 9em;
 }
-#search-block-form input.form-submit,
-#search-form input.form-submit {
+#search-block-form input.form-submit {
   margin-left: 0;
   margin-right: 0;
   height: 25px;
@@ -1466,6 +1465,9 @@ div.vertical-tabs .vertical-tabs-panes fieldset.vertical-tabs-pane {
   border-color: #e4e4e4 #d2d2d2 #b4b4b4;
   background: url(../images/search-button.png) no-repeat center top;
   overflow: hidden;
+}
+#search-form input.form-submit {
+  padding-left: 15px !important;
 }
 #search-block-form input.form-submit:hover,
 #search-block-form input.form-submit:focus,
