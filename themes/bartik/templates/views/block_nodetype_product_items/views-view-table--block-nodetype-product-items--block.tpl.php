@@ -31,7 +31,7 @@ drupal_add_js(path_to_theme() . '/js/db/views-node-product-dp.js', array('group'
 						<span class="separator"> | </span>
 						<span class="text"><?php print $row['field_pd_color']; ?></span>
 					</div>
-					<div class="teaser"><?php print $row['body_1']; ?></div>
+					<div class="teaser"><?php print $row['field_pd_short_description'] ? $row['field_pd_short_description'] : $row['body_1']; ?></div>
 				</div>
 				<!-- <div class="stock"><?php print $row['commerce_stock']; ?> items in stock</div> -->
 				<div class="cart_row">
