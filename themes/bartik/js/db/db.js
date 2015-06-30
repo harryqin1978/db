@@ -16,6 +16,12 @@ jQuery(document).ready(function($) {
     $(el).find('.href_layer a').attr('title', _title);
   });
 
+  $('#block-search-form .form-submit').click(function(event) {
+    event.preventDefault();
+    var _keyword = $('#block-search-form .form-text').val();
+    window.location.href = Drupal.settings.basePath + Drupal.settings.pathPrefix + 'products?title=' + _keyword;
+  });
+
   if ($('body').hasClass('page-cart')) {
     $('#views-form-commerce-cart-form-default td.views-field-nothing').each(function(){
       var op = parseFloat($(this).parent().find('td.views-field-field-product-origin-price').html().replace('$', ''));
@@ -68,9 +74,9 @@ jQuery(document).ready(function($) {
 
 
 
-$(function() {
-  $('#edit-search-block-form--2').example('Search');
-  $('#search-block-pro-form #edit-title').example('Search products');
+  $(function() {
+    $('#edit-search-block-form--2').example('Search');
+    $('#search-block-pro-form #edit-title').example('Search products');
   });
 
 
