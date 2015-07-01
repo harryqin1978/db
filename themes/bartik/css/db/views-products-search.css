@@ -285,4 +285,8 @@
 .views-exposed-form #edit-title {
   width: 140px;
 }
+
+.views-exposed-form .views-exposed-widget.views-submit-button {
+  clear: both;
+}
 /* --- reset for new designer ---  end */
