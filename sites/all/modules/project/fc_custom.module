@@ -1,13 +1,10 @@
 <?php
 
-
-
 /**
  * Implements hook_init().
  */
 function fc_custom_init() {
 }
-
 
 /**
  * Implements hook_commerce_currency_info_alter().
@@ -26,4 +23,45 @@ function fc_custom_form_alter(&$form, &$form_state, $form_id) {
 
   if ($form_id == 'views_exposed_form') {
   }
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function fc_custom_block_info() {
+  $blocks['homepage_top_images'] = array(
+    'info' => t('Homepage Top Images'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function fc_custom_block_view($delta = '') {
+  $block = array();
+
+  switch ($delta) {
+    case 'homepage_top_images':
+      $block['content'] = theme('homepage_top_images');
+      break;
+  }
+
+  return $block;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function fc_custom_theme() {
+  $themes = array(
+    'homepage_top_images' => array(
+      'template' => 'homepage-top-images', // your template file called homepage-top-images.tpl.php
+      'arguments' => array(),
+    ),
+  );
+
+  return $themes;
 }
