@@ -829,6 +829,7 @@ div.more span:hover > a{
     text-shadow: 0 1px 0 #FFFFFF;
     line-height: 1.2;
 }
+
 .sidebar .block h2:hover, .content h2:hover, h1#page-title:hover, #content .block h2:hover  {
   /*color: #d80864;*/
 }
@@ -1516,6 +1517,9 @@ general
   font-size: 22px;
   text-transform: uppercase;
   border-bottom: 1px solid #a2373f;
+}
+body.i18n-zh-hans .sidebar .block h2, .content h2, h1#page-title, #content .block h2 {
+  font-weight: normal;
 }
 h1#page-title {
   background: url(../../images/singe-news-icon.png) right center no-repeat;
