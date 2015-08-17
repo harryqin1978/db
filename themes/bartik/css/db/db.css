@@ -1314,6 +1314,10 @@ body.page-products h1#page-title{
   padding-right: 5px;
 }
 
+#home_special .attr {
+  margin-top: -20px;
+}
+
 #home_special .attr label {
     display: inline;
     font-size: 9px;
