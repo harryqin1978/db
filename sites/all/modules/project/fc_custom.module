@@ -65,3 +65,15 @@ function fc_custom_theme() {
 
   return $themes;
 }
+
+/**
+ * Implements hook_commerce_shipping_service_info_alter().
+ *
+ * This should be removed once https://drupal.org/node/1369696 is resolved.
+ */
+function fc_custom_commerce_shipping_service_info_alter(&$shipping_services) {
+  // Use t() to translate the shipping service display.
+  foreach ($shipping_services as $name => &$shipping_service) {
+   $shipping_service['display_title'] = t($shipping_service['display_title']);
+  }
+}
